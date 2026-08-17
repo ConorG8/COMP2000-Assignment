@@ -1,8 +1,8 @@
 import java.util;
 
-public class Ball{
+public class Cell {
     
-    public Ball(){
+    public Cell(){
 
     }
 }
