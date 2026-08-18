@@ -1,0 +1,5 @@
+public Class BaseState {
+  public BaseState() {
+
+  }
+}
