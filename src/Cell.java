@@ -3,6 +3,6 @@ import java.util;
 public class Cell {
     
     public Cell(){
-        public State cellState;
+        // public State cellState; // fix this
     }
 }
