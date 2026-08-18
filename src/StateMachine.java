@@ -1,10 +1,4 @@
-public interface CharacterState {
-    String getType();
-    int checkMatchup(CharacterState opponent);
-    String getActionPhrase();
-}
-
-public abstract class BaseState implements CharacterState {
+public abstract class StateMachine implements CharacterState {
     @Override
     public int checkMatchup(CharacterState opponent) {
         if (this.getType().equals(opponent.getType())) return 0; // Tie
