@@ -4,9 +4,24 @@ public abstract class StateMachine implements CharacterState {
         if (this.getType().equals(opponent.getType())) return 0; // Tie
         
         switch (this.getType()) {
-            case "INFECTED":  return opponent.getType().equals("NEUTRAL") ? 1 : -1;
-            case "ANTIVIRUS": return opponent.getType().equals("INFECTED") ? 1 : -1;
-            case "NEUTRAL":   return opponent.getType().equals("ANTIVIRUS") ? 1 : -1;
+            case "INFECTED":  
+                if (opponent.getType().equals("NEUTRAL")) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            case "ANTIVIRUS": 
+                if (opponent.getType().equals("INFECTED")) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            case "NEUTRAL":   
+                if(opponent.getType().equals("ANTIVIRUS")) {
+                    return 1;
+                } else {
+                    return -1;
+                }
             default: return 0;
         }
     }
