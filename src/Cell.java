@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Cell implements Drawable {
+public class Cell {
     private int x, y;
     private final int size = 20;
     private String id;
