@@ -53,7 +53,16 @@ public class SimulationPanel extends JPanel implements ActionListener{
             cell.move(getWidth(), getHeight());
         }
 
-        // 2. TODO: Handle collisions between cells here
+        for (int i = 0; i < cells.size(); i++) {
+            for (int j = i+1; j < cells.size(); j++) {
+                Cell a = cells.get(i);
+                Cell b = cells.get(j);
+
+                if (a.collidesWith(b)) {
+                    a.onCollision(b);
+                }
+            }
+        }
 
         repaint();
     }

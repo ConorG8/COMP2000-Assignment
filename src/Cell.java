@@ -47,33 +47,39 @@ public class Cell {
     }
 
     public void move(int panelWidth, int panelHeight) {
-    if (panelWidth <= 0 || panelHeight <= 0) {
-        return; 
+        if (panelWidth <= 0 || panelHeight <= 0) {
+            return; 
+        }
+        x += velX;
+        y += velY;
+
+        if (x <= 0) {
+            x = 0;
+            velX = -velX;
+        } else if (x + size >= panelWidth) {
+            x = panelWidth - size;
+            velX = -velX;
+        }
+
+        if (y <= 0) {
+            y = 0;
+            velY = -velY;
+        } else if (y + size >= panelHeight) {
+            y = panelHeight - size;
+            velY = -velY;
+        }
     }
-    x += velX;
-    y += velY;
 
-    if (x <= 0) {
-        x = 0;
-        velX = -velX;
-    } else if (x + size >= panelWidth) {
-        x = panelWidth - size;
-        velX = -velX;
+    public boolean collidesWith(Cell other) {
+        int radius = size / 2;
+        double centXA = x + radius;
+        double centYA = y + radius;
+        double centXB = other.x + radius;
+        double centYB = other.y + radius;
+
+        if(Math.hypot(centXB - centXA, centYB - centYA) <= size){
+            return true;
+        }
+        return false;
     }
-
-    if (y <= 0) {
-        y = 0;
-        velY = -velY;
-    } else if (y + size >= panelHeight) {
-        y = panelHeight - size;
-        velY = -velY;
-    }
-}
-
-
-    /* public Cell checkCollisions() {
-        // get x and y of self and check if it collided with another cell
-        
-        return null;
-    } */
 }
