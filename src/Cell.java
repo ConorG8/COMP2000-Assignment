@@ -35,7 +35,7 @@ public class Cell {
 
         g.fillOval((int) x, (int) y, size, size);
 
-        g.setColor(this.getState().getCellColor());
+        g.setColor(Color.BLACK);
         g.drawOval((int) x, (int) y, size, size);
     }
 
