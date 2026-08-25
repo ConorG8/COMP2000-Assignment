@@ -36,4 +36,10 @@ public class Cell {
     public int onCollision(Cell opponent){
         return this.state.checkMatchup(opponent.getState());
     }
+
+    public Cell checkCollisions() {
+        // get x and y of self and check if it collided with another cell
+        
+        return
+    }
 }
