@@ -1,6 +1,6 @@
 import java.awt.Color;
 
-public class InfectedState extends StateMachine{
+public class InfectedState extends StateMachine {
     @Override 
     public String getType(){
         return "INFECTED";

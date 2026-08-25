@@ -1,6 +1,6 @@
 import java.awt.Color;
 
-public class AntivirusState extends StateMachine{
+public class AntivirusState extends StateMachine {
     @Override 
     public String getType(){ 
         return "ANTIVIRUS"; 

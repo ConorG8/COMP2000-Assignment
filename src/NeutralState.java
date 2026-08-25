@@ -1,6 +1,6 @@
 import java.awt.Color;
 
-public class NeutralState extends StateMachine{
+public class NeutralState extends StateMachine {
     @Override 
     public String getType(){
         return "NEUTRAL";

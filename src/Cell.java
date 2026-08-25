@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
+// Cell Class
 public class Cell {
     private int x, y;
     private final int size = 20;
@@ -24,7 +25,7 @@ public class Cell {
         this.state = newState;
     }
 
-    public void draw(Graphics g){
+    public void draw(Graphics g) {
         g.setColor(state.getCellColor());
 
         g.fillOval(x, y, size, size);
@@ -37,9 +38,10 @@ public class Cell {
         return this.state.checkMatchup(opponent.getState());
     }
 
-    public Cell checkCollisions() {
+    /* public Cell checkCollisions() {
         // get x and y of self and check if it collided with another cell
-        
-        return
-    }
+
+
+    
+    } */
 }
