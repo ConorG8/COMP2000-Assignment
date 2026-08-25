@@ -5,9 +5,9 @@ public class Cell {
     private int x, y;
     private final int size = 20;
     private String id;
-    private CharacterState state;
+    private CellState state;
 
-    public Cell(int startX, int startY, String id, CharacterState initialState){
+    public Cell(int startX, int startY, String id, CellState initialState){
         this.x = startX;
         this.y = startY;
         this.id = id;
@@ -18,9 +18,9 @@ public class Cell {
     public int getY() { return y; }
     public int getSize() { return size; }
     public String getId() { return id; }
-    public CharacterState getState() { return state; }
+    public CellState getState() { return state; }
 
-    public void changeState(CharacterState newState){
+    public void changeState(CellState newState){
         this.state = newState;
     }
 
