@@ -1,6 +1,6 @@
-public abstract class StateMachine implements CharacterState {
+public abstract class StateMachine implements CellState {
     @Override
-    public int checkMatchup(CharacterState opponent) {
+    public int checkMatchup(CellState opponent) {
         if (this.getType().equals(opponent.getType())) return 0; // Tie
         
         switch (this.getType()) {
