@@ -33,10 +33,12 @@ public class SimulationPanel extends JPanel implements ActionListener{
         }
     }
 
-    public void createCells(){
+    public void createCells(){ // Create each cell, and add to the list with the given variables.
         for(int i = 0; i < 100; i++){
             if(i < 80){
-                cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new NeutralState()));
+                // 990 and 790 for the height and width, inset by 10 pixels each.
+                // TODO: Make them screen width and height variables, for cleaner code.
+                cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new NeutralState())); 
             } 
             else if(i >= 80 && i <= 90){
                 cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new InfectedState()));
@@ -49,11 +51,11 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for (Cell cell : cells) {
+        for (Cell cell : cells) { // For each cell, move
             cell.move(getWidth(), getHeight());
         }
 
-        for (int i = 0; i < cells.size(); i++) {
+        for (int i = 0; i < cells.size(); i++) { // Check cell collisions
             for (int j = i+1; j < cells.size(); j++) {
                 Cell a = cells.get(i);
                 Cell b = cells.get(j);
@@ -64,6 +66,6 @@ public class SimulationPanel extends JPanel implements ActionListener{
             }
         }
 
-        repaint();
+        repaint(); // draw next frame
     }
 }

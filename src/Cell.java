@@ -30,7 +30,7 @@ public class Cell {
         this.state = newState;
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics g) { // Drawing loop for the cell
         g.setColor(state.getCellColor());
 
         g.fillOval((int) x, (int) y, size, size);
@@ -39,14 +39,14 @@ public class Cell {
         g.drawOval((int) x, (int) y, size, size);
     }
 
-    public void onCollision(Cell opponent){
+    public void onCollision(Cell opponent){ // change the cell states depending on the type of reaction
         CellState oppNewState = opponent.state.reactWith(this.getState());
         CellState thisNewState = this.state.reactWith(opponent.getState());
         changeState(thisNewState);
         opponent.changeState(oppNewState);
     }
 
-    public void move(int panelWidth, int panelHeight) {
+    public void move(int panelWidth, int panelHeight) { // Move logic
         if (panelWidth <= 0 || panelHeight <= 0) {
             return; 
         }
@@ -70,7 +70,7 @@ public class Cell {
         }
     }
 
-    public boolean collidesWith(Cell other) {
+    public boolean collidesWith(Cell other) { // Collision logic
         int radius = size / 2;
         double centXA = x + radius;
         double centYA = y + radius;
