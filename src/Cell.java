@@ -5,6 +5,8 @@ import java.awt.Graphics;
 public class Cell {
     private double x;
     private double y;
+    private double velX;
+    private double velY;
     private final int size = 20;
     private int id;
     private CellState state;
@@ -14,6 +16,8 @@ public class Cell {
         this.y = startY;
         this.id = id;
         this.state = initialState;
+        this.velX = (Math.random() * 6) - 3;
+        this.velY = (Math.random() * 6) - 3;
     }       
 
     public double getX() { return x; }
@@ -31,7 +35,7 @@ public class Cell {
 
         g.fillOval((int) x, (int) y, size, size);
 
-        g.setColor(Color.BLACK);
+        g.setColor(this.getState().getCellColor());
         g.drawOval((int) x, (int) y, size, size);
     }
 
@@ -42,9 +46,34 @@ public class Cell {
         opponent.changeState(oppNewState);
     }
 
-    public Cell checkCollisions() {
+    public void move(int panelWidth, int panelHeight) {
+    if (panelWidth <= 0 || panelHeight <= 0) {
+        return; 
+    }
+    x += velX;
+    y += velY;
+
+    if (x <= 0) {
+        x = 0;
+        velX = -velX;
+    } else if (x + size >= panelWidth) {
+        x = panelWidth - size;
+        velX = -velX;
+    }
+
+    if (y <= 0) {
+        y = 0;
+        velY = -velY;
+    } else if (y + size >= panelHeight) {
+        y = panelHeight - size;
+        velY = -velY;
+    }
+}
+
+
+    /* public Cell checkCollisions() {
         // get x and y of self and check if it collided with another cell
         
         return null;
-    }
+    } */
 }
