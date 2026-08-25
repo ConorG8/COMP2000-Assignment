@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
+// Cell Class
 public class Cell {
     private double x;
     private double y;
@@ -25,7 +26,7 @@ public class Cell {
         this.state = newState;
     }
 
-    public void draw(Graphics g){
+    public void draw(Graphics g) {
         g.setColor(state.getCellColor());
 
         g.fillOval((int) x, (int) y, size, size);
