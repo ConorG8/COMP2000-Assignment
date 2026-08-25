@@ -16,8 +16,8 @@ public class Cell {
         this.y = startY;
         this.id = id;
         this.state = initialState;
-        this.velX = (Math.random() * 6) - 3;
-        this.velY = (Math.random() * 6) - 3;
+        this.velX = (Math.random() * 3)-1;
+        this.velY = (Math.random() * 3)-1;
     }       
 
     public double getX() { return x; }

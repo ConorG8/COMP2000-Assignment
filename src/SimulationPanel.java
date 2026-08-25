@@ -35,13 +35,13 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
     public void createCells(){
         for(int i = 0; i < 100; i++){
-            if(i < 33){
+            if(i < 80){
                 cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new NeutralState()));
             } 
-            else if(i >= 33 && i <= 66){
+            else if(i >= 80 && i <= 90){
                 cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new InfectedState()));
             }
-            else if(i > 66){
+            else {
                 cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new AntivirusState()));
             }
         }
