@@ -1,13 +1,17 @@
 import java.awt.Color;
 
-public class AntivirusState extends StateMachine{
-    @Override 
-    public String getType(){ 
-        return "ANTIVIRUS"; 
-    }
+public class AntivirusState implements CellState {
+    @Override public String getType() { return "ANTIVIRUS"; }
+    @Override public Color getCellColor() { return new Color(0, 0, 255); }
 
-    @Override 
-    public Color getCellColor(){
-        return new Color(0, 0, 255);
+    @Override
+    public CellState reactWith(CellState opponent) {
+        if (opponent.getType().equals("NEUTRAL")) {
+            return this;  // stay the same;
+        } else if (opponent.getType().equals("INFECTED")) {
+            return new NeutralState();  // Infected meeting Antivirus. Become Neutral
+        } else {
+            return this;  // Anti on Anti. Nothing happens.
+        }
     }
 }

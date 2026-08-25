@@ -1,8 +1,13 @@
+import javax.swing.JFrame;
 
-
-public static void main(String[] arg){
-
-    Window window = new Window();
-    window.setVisible(true);
+public class Main {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Pandemic Simulator");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(new SimulationPanel());   // you'll build this in step 5
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
 }
 
