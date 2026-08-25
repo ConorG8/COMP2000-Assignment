@@ -1,7 +1,7 @@
 import java.awt.Color;
 
-public interface CharacterState {
+public interface CellState {
     String getType();
     Color getCellColor();
-    int checkMatchup(CharacterState opponent);
+    int checkMatchup(CellState opponent);
 }
