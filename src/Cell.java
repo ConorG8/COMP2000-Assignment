@@ -7,9 +7,12 @@ public class Cell {
     private double y;
     private double velX;
     private double velY;
-    private final int size = 20;
+
+    private int size = 20;
     private int id;
     private CellState state;
+
+    private int tick = 0;
 
     public Cell(double startX, double startY, int id, CellState initialState) {
         this.x = startX;
@@ -31,12 +34,20 @@ public class Cell {
     }
 
     public void draw(Graphics g) { // Drawing loop for the cell
-        g.setColor(state.getCellColor());
+        tick++;
+        int currentSize = size; // For size changes
 
-        g.fillOval((int) x, (int) y, size, size);
+        if(state.getType().equals("INFECTED")){ // "Pulsate" if the cell is infected
+            currentSize = (int) (size + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
+        }
+
+        g.setColor(state.getCellColor());
+        
+        int offset = (currentSize - size) / 2;
+        g.fillOval((int) x - offset, (int) y - offset, currentSize, currentSize);
 
         g.setColor(Color.BLACK);
-        g.drawOval((int) x, (int) y, size, size);
+        g.drawOval((int) x-offset, (int) y-offset, currentSize, currentSize);
     }
 
     public void onCollision(Cell opponent){ // change the cell states depending on the type of reaction
