@@ -37,7 +37,7 @@ public class Cell {
         tick++;
         int currentSize = size; // For size changes
 
-        if(state.getType().equals("INFECTED")){ // "Pulsate" if the cell is infected
+        if(state.getType().equals("INFECTED")) { // "Pulsate" if the cell is infected
             currentSize = (int) (size + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
         }
 
@@ -50,7 +50,7 @@ public class Cell {
         g.drawOval((int) x-offset, (int) y-offset, currentSize, currentSize);
     }
 
-    public void onCollision(Cell opponent){ // change the cell states depending on the type of reaction
+    public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
         CellState oppNewState = opponent.state.reactWith(this.getState());
         CellState thisNewState = this.state.reactWith(opponent.getState());
         changeState(thisNewState);
@@ -88,7 +88,7 @@ public class Cell {
         double centXB = other.x + radius;
         double centYB = other.y + radius;
 
-        if(Math.hypot(centXB - centXA, centYB - centYA) <= size){
+        if (Math.hypot(centXB - centXA, centYB - centYA) <= size) {
             return true;
         }
         return false;

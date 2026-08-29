@@ -12,10 +12,15 @@ import java.awt.event.ActionListener;
 public class SimulationPanel extends JPanel implements ActionListener{
     private final List<Cell> cells = new ArrayList<>();
     private Timer timer;
+    public int screenX;
+    private int screenY;
 
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1000, 800));
         this.setBackground(Color.LIGHT_GRAY);
+        screenX = this.getPreferredSize().width;
+        screenY = this.getPreferredSize().height;
+
         createCells();
 
         timer = new Timer(16, this);
@@ -28,23 +33,26 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
         g.setColor(Color.BLACK);
 
-        for(Cell cell : cells){
+        for (Cell cell : cells) {
             cell.draw(g);
         }
     }
 
-    public void createCells(){ // Create each cell, and add to the list with the given variables.
-        for(int i = 0; i < 100; i++){
-            if(i < 80){
+    public void createCells() { // Create each cell, and add to the list with the given variables.
+        for (int i = 0; i < 100; i++) {
+            if (i < 80) {
                 // 990 and 790 for the height and width, inset by 10 pixels each.
-                // TODO: Make them screen width and height variables, for cleaner code.
-                cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new NeutralState())); 
+                // TODO: Make them screen width and height variables, for cleaner code. (should be implemented now)
+
+                // Minus 10 from the width and height of the screen to account for the diameter of the cell
+
+                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new NeutralState())); 
             } 
             else if(i >= 80 && i <= 90){
-                cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new InfectedState()));
+                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new InfectedState()));
             }
             else {
-                cells.add(new Cell(Math.random() * 990, Math.random() * 790, i, new AntivirusState()));
+                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new AntivirusState()));
             }
         }
     }
