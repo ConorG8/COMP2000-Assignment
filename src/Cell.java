@@ -57,26 +57,26 @@ public class Cell {
         opponent.changeState(oppNewState);
     }
 
-    public void move(int panelWidth, int panelHeight) { // Move logic
-        if (panelWidth <= 0 || panelHeight <= 0) {
+    public void move(int panelMaxWidth, int panelMaxHeight, int panelMinWidth, int panelMinHeight) { // Move logic
+        if (panelMaxWidth <= 0 || panelMaxHeight <= 0) {
             return; 
         }
         x += velX;
         y += velY;
 
-        if (x <= 0) {
-            x = 0;
+        if (x <= panelMinWidth) {
+            x = panelMinHeight;
             velX = -velX;
-        } else if (x + size >= panelWidth) {
-            x = panelWidth - size;
+        } else if (x + size >= panelMaxWidth) {
+            x = panelMaxWidth - size;
             velX = -velX;
         }
 
-        if (y <= 0) {
-            y = 0;
+        if (y <= panelMinHeight) {
+            y = panelMinHeight;
             velY = -velY;
-        } else if (y + size >= panelHeight) {
-            y = panelHeight - size;
+        } else if (y + size >= panelMaxHeight) {
+            y = panelMaxHeight - size;
             velY = -velY;
         }
     }

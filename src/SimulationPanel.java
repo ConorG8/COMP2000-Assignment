@@ -3,6 +3,7 @@ import javax.swing.Timer;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +13,17 @@ import java.awt.event.ActionListener;
 public class SimulationPanel extends JPanel implements ActionListener{
     private final List<Cell> cells = new ArrayList<>();
     private Timer timer;
-    public int screenX;
-    private int screenY;
+    public int simScreenX;
+    public int simScreenY;
+    public int offset;
+    public int statScreenX = 400;
 
     public SimulationPanel() {
-        this.setPreferredSize(new Dimension(1000, 800));
-        this.setBackground(Color.LIGHT_GRAY);
-        screenX = this.getPreferredSize().width;
-        screenY = this.getPreferredSize().height;
+        this.setPreferredSize(new Dimension(1200, 800));
+        this.setBackground(Color.black);
+        offset = 10;
+        simScreenX = this.getPreferredSize().width - statScreenX - offset;
+        simScreenY = this.getPreferredSize().height - offset;
 
         createCells();
 
@@ -33,6 +37,10 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
         g.setColor(Color.BLACK);
 
+        drawSimBorder(g);
+
+        drawStats(g);
+
         for (Cell cell : cells) {
             cell.draw(g);
         }
@@ -41,26 +49,62 @@ public class SimulationPanel extends JPanel implements ActionListener{
     public void createCells() { // Create each cell, and add to the list with the given variables.
         for (int i = 0; i < 100; i++) {
             if (i < 80) {
-                // 990 and 790 for the height and width, inset by 10 pixels each.
-                // TODO: Make them screen width and height variables, for cleaner code. (should be implemented now)
-
                 // Minus 10 from the width and height of the screen to account for the diameter of the cell
-
-                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new NeutralState())); 
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new NeutralState())); 
             } 
             else if(i >= 80 && i <= 90){
-                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new InfectedState()));
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new InfectedState()));
             }
             else {
-                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new AntivirusState()));
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new AntivirusState()));
             }
         }
     }
 
+    public void drawSimBorder(Graphics g){
+        // Sim screen borders
+        g.setColor(Color.BLACK);
+        g.drawLine(simScreenX, offset, simScreenX, simScreenY);
+        g.drawLine(offset, offset, offset, simScreenY);
+        g.drawLine(offset, offset, simScreenX, offset);
+        g.drawLine(offset, simScreenY, simScreenX, simScreenY);
+        // Sim screen background
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
+    }
+
+    public void drawStats(Graphics g){
+        int neutralCount = 0;
+        int infectedCount = 0;
+        int antivirusCount = 0;
+        g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        g.setColor(Color.WHITE);
+        g.drawString("Total Cells: " + cells.size(), simScreenX + offset, offset * 3);
+
+        for(Cell c : cells){
+            if(c.getState().getType().equals("NEUTRAL")){
+                neutralCount++;
+            }
+            if(c.getState().getType().equals("INFECTED")){
+                infectedCount++;
+            }
+            if(c.getState().getType().equals("ANTIVIRUS")){
+                antivirusCount++;
+            }
+        }
+        g.setColor(new NeutralState().getCellColor());
+        g.drawString("Neutral Cells: " + neutralCount, simScreenX + offset, offset * 6);
+        g.setColor(new InfectedState().getCellColor());
+        g.drawString("Infected Cells: " + infectedCount, simScreenX + offset, offset * 9);
+        g.setColor(new AntivirusState().getCellColor());
+        g.drawString("Antivirus Cells: " + antivirusCount, simScreenX + offset, offset * 12);
+    }
+
+
     @Override
     public void actionPerformed(ActionEvent e) {
         for (Cell cell : cells) { // For each cell, move
-            cell.move(getWidth(), getHeight());
+            cell.move(simScreenX, simScreenY, offset, offset);
         }
 
         for (int i = 0; i < cells.size(); i++) { // Check cell collisions
