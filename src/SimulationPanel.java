@@ -50,13 +50,13 @@ public class SimulationPanel extends JPanel implements ActionListener{
         for (int i = 0; i < 100; i++) {
             if (i < 80) {
                 // Minus 10 from the width and height of the screen to account for the diameter of the cell
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new NeutralState())); 
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, NeutralState.INSTANCE)); 
             } 
             else if(i >= 80 && i <= 90){
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new InfectedState()));
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, InfectedState.INSTANCE));
             }
             else {
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new AntivirusState()));
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, AntivirusState.INSTANCE));
             }
         }
     }
@@ -92,11 +92,11 @@ public class SimulationPanel extends JPanel implements ActionListener{
                 antivirusCount++;
             }
         }
-        g.setColor(new NeutralState().getCellColor());
+        g.setColor(NeutralState.INSTANCE.getCellColor());
         g.drawString("Neutral Cells: " + neutralCount, simScreenX + offset, offset * 6);
-        g.setColor(new InfectedState().getCellColor());
+        g.setColor(InfectedState.INSTANCE.getCellColor());
         g.drawString("Infected Cells: " + infectedCount, simScreenX + offset, offset * 9);
-        g.setColor(new AntivirusState().getCellColor());
+        g.setColor(AntivirusState.INSTANCE.getCellColor());
         g.drawString("Antivirus Cells: " + antivirusCount, simScreenX + offset, offset * 12);
     }
 
