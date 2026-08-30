@@ -1,14 +1,13 @@
-import javax.swing.JPanel;
-import javax.swing.Timer;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class SimulationPanel extends JPanel implements ActionListener{
     private final List<Cell> cells = new ArrayList<>();
@@ -16,7 +15,7 @@ public class SimulationPanel extends JPanel implements ActionListener{
     public int simScreenX;
     public int simScreenY;
     public int offset;
-    public int statScreenX = 400;
+    public int statScreenX = 200;
 
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1200, 800));
