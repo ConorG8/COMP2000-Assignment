@@ -3,6 +3,7 @@ import javax.swing.Timer;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +37,9 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
         g.setColor(Color.BLACK);
 
-        // Sim screen borders
-        g.drawLine(simScreenX, offset, simScreenX, simScreenY);
-        g.drawLine(offset, offset, offset, simScreenY);
-        g.drawLine(offset, offset, simScreenX, offset);
-        g.drawLine(offset, simScreenY, simScreenX, simScreenY);
-        g.setColor(Color.WHITE);
-        g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
+        drawSimBorder(g);
+
+        drawStats(g);
 
         for (Cell cell : cells) {
             cell.draw(g);
@@ -63,6 +60,46 @@ public class SimulationPanel extends JPanel implements ActionListener{
             }
         }
     }
+
+    public void drawSimBorder(Graphics g){
+        // Sim screen borders
+        g.setColor(Color.BLACK);
+        g.drawLine(simScreenX, offset, simScreenX, simScreenY);
+        g.drawLine(offset, offset, offset, simScreenY);
+        g.drawLine(offset, offset, simScreenX, offset);
+        g.drawLine(offset, simScreenY, simScreenX, simScreenY);
+        // Sim screen background
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
+    }
+
+    public void drawStats(Graphics g){
+        int neutralCount = 0;
+        int infectedCount = 0;
+        int antivirusCount = 0;
+        g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        g.setColor(Color.WHITE);
+        g.drawString("Total Cells: " + cells.size(), simScreenX + offset, offset * 3);
+
+        for(Cell c : cells){
+            if(c.getState().getType().equals("NEUTRAL")){
+                neutralCount++;
+            }
+            if(c.getState().getType().equals("INFECTED")){
+                infectedCount++;
+            }
+            if(c.getState().getType().equals("ANTIVIRUS")){
+                antivirusCount++;
+            }
+        }
+        g.setColor(new NeutralState().getCellColor());
+        g.drawString("Neutral Cells: " + neutralCount, simScreenX + offset, offset * 6);
+        g.setColor(new InfectedState().getCellColor());
+        g.drawString("Infected Cells: " + infectedCount, simScreenX + offset, offset * 9);
+        g.setColor(new AntivirusState().getCellColor());
+        g.drawString("Antivirus Cells: " + antivirusCount, simScreenX + offset, offset * 12);
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
