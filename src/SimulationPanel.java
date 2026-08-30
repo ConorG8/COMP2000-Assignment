@@ -12,14 +12,17 @@ import java.awt.event.ActionListener;
 public class SimulationPanel extends JPanel implements ActionListener{
     private final List<Cell> cells = new ArrayList<>();
     private Timer timer;
-    public int screenX;
-    private int screenY;
+    public int simScreenX;
+    public int simScreenY;
+    public int offset;
+    public int statScreenX = 400;
 
     public SimulationPanel() {
-        this.setPreferredSize(new Dimension(1000, 800));
-        this.setBackground(Color.LIGHT_GRAY);
-        screenX = this.getPreferredSize().width;
-        screenY = this.getPreferredSize().height;
+        this.setPreferredSize(new Dimension(1200, 800));
+        this.setBackground(Color.black);
+        offset = 10;
+        simScreenX = this.getPreferredSize().width - statScreenX - offset;
+        simScreenY = this.getPreferredSize().height - offset;
 
         createCells();
 
@@ -33,6 +36,14 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
         g.setColor(Color.BLACK);
 
+        // Sim screen borders
+        g.drawLine(simScreenX, offset, simScreenX, simScreenY);
+        g.drawLine(offset, offset, offset, simScreenY);
+        g.drawLine(offset, offset, simScreenX, offset);
+        g.drawLine(offset, simScreenY, simScreenX, simScreenY);
+        g.setColor(Color.WHITE);
+        g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
+
         for (Cell cell : cells) {
             cell.draw(g);
         }
@@ -41,18 +52,14 @@ public class SimulationPanel extends JPanel implements ActionListener{
     public void createCells() { // Create each cell, and add to the list with the given variables.
         for (int i = 0; i < 100; i++) {
             if (i < 80) {
-                // 990 and 790 for the height and width, inset by 10 pixels each.
-                // TODO: Make them screen width and height variables, for cleaner code. (should be implemented now)
-
                 // Minus 10 from the width and height of the screen to account for the diameter of the cell
-
-                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new NeutralState())); 
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new NeutralState())); 
             } 
             else if(i >= 80 && i <= 90){
-                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new InfectedState()));
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new InfectedState()));
             }
             else {
-                cells.add(new Cell(Math.random() * (screenX - 10), Math.random() * (screenY - 10), i, new AntivirusState()));
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, new AntivirusState()));
             }
         }
     }
@@ -60,7 +67,7 @@ public class SimulationPanel extends JPanel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         for (Cell cell : cells) { // For each cell, move
-            cell.move(getWidth(), getHeight());
+            cell.move(simScreenX, simScreenY, offset, offset);
         }
 
         for (int i = 0; i < cells.size(); i++) { // Check cell collisions

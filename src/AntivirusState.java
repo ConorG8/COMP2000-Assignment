@@ -2,7 +2,7 @@ import java.awt.Color;
 
 public class AntivirusState implements CellState {
     @Override public String getType() { return "ANTIVIRUS"; }
-    @Override public Color getCellColor() { return new Color(0, 0, 255); }
+    @Override public Color getCellColor() { return new Color(46, 61, 195); }
 
     @Override
     public CellState reactWith(CellState opponent) {
