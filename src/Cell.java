@@ -65,7 +65,7 @@ public class Cell {
         y += velY;
 
         if (x <= panelMinWidth) {
-            x = panelMinHeight;
+            x = panelMinWidth;
             velX = -velX;
         } else if (x + size >= panelMaxWidth) {
             x = panelMaxWidth - size;
