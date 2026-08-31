@@ -8,10 +8,10 @@ public class Cell {
     private double velX;
     private double velY;
     public double speed = Settings.CELL_SPEED;
-
     private int size = Settings.CELL_SIZE;
     private int id;
     private CellState state;
+    private Color color; // Default color for the cell
 
     private boolean collisionEnabled = Settings.hasCollision; // Collision enabled or not
 
@@ -22,9 +22,20 @@ public class Cell {
         this.y = startY;
         this.id = id;
         this.state = initialState;
+        this.color = initialState.getCellColor(); // Set color based on initial state
         this.velX = ((Math.random() * 3)-1) * speed;
         this.velY = ((Math.random() * 3)-1) * speed;
-    }       
+    }
+    
+    public Cell(double startX, double startY, int id, CellState initialState, Color color) {
+        this.x = startX;
+        this.y = startY;
+        this.id = id;
+        this.state = initialState;
+        this.color = color;
+        this.velX = ((Math.random() * 3)-1) * speed;
+        this.velY = ((Math.random() * 3)-1) * speed;
+    }    
 
     public double getX() { return x; }
     public double getY() { return y; }
@@ -44,7 +55,7 @@ public class Cell {
             currentSize = (int) (size + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
         }
 
-        g.setColor(state.getCellColor());
+        g.setColor(color);
         
         int offset = (currentSize - size) / 2;
         g.fillOval((int) x - offset, (int) y - offset, currentSize, currentSize);
