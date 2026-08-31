@@ -54,6 +54,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
         });
         this.add(resetButton);
     }
+    
 
     public void resetSimulation() {
         cellCount = Settings.CELL_COUNT;
