@@ -190,8 +190,8 @@ public class SimulationPanel extends JPanel implements ActionListener {
         g.setFont(new Font("Times New Roman", Font.PLAIN, 30));
         g.setColor(Color.BLACK);
         g.drawString("Season: " + seasonManager.getCurrentSeason(), 10, simScreenY - 35);
-        g.drawString("Next Season: " + seasonManager.getSecondsRemaining() + "s", 10, simScreenY - 10);
         g.setColor(Color.WHITE);
+        g.drawString("Next Season: " + seasonManager.getSecondsRemaining() + "s", 10, simScreenY - 10);
         g.drawString("Pandemic", simScreenX + offset, offset * 3);
         g.drawString("Simulator", simScreenX + offset, offset * 6);
         g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
