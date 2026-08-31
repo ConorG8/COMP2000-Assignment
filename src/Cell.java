@@ -13,6 +13,8 @@ public class Cell {
     private int id;
     private CellState state;
 
+    private boolean collisionEnabled = Settings.hasCollision; // Collision enabled or not
+
     private int tick = 0;
 
     public Cell(double startX, double startY, int id, CellState initialState) {
@@ -56,7 +58,10 @@ public class Cell {
         CellState thisNewState = this.state.reactWith(opponent.getState());
         changeState(thisNewState);
         opponent.changeState(oppNewState);
-        bounceOff(opponent);
+
+        if (collisionEnabled) {
+            bounceOff(opponent);
+        }
     }
 
     public void bounceOff(Cell opponent) { // Bounce off logic

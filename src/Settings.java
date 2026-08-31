@@ -4,16 +4,18 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 
 public class Settings {
     public static int CELL_SIZE = 20;
     public static double CELL_SPEED = 1.0;
-    public static int CELL_COUNT = 100; // Total number of cells in the simulation
+    public static int CELL_COUNT = 100;
+    public static boolean hasCollision = true;
 
     public JPanel settingsPanel() {
         // Create a settings panel with sliders for cell size and speed
         JPanel settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(3, 3, 5, 5));
+        settingsPanel.setLayout(new GridLayout(4, 3, 5, 5));
         settingsPanel.setBackground(Color.DARK_GRAY);
         settingsPanel.setOpaque(true);
 
@@ -50,6 +52,15 @@ public class Settings {
             countValueLabel.setText(String.valueOf(Settings.CELL_COUNT));
         });
 
+        JLabel collisionLabel = new JLabel("Collision");
+        collisionLabel.setForeground(Color.WHITE);
+        JToggleButton collisionToggle = new JToggleButton(Settings.hasCollision ? "On" : "Off");
+        collisionToggle.setBackground(Color.WHITE);
+        collisionToggle.addActionListener(e -> {
+            Settings.hasCollision = !Settings.hasCollision;
+            collisionToggle.setText(Settings.hasCollision ? "On" : "Off");
+        });
+
         settingsPanel.add(sizeLabel);
         settingsPanel.add(sizeSlider);
         settingsPanel.add(sizeValueLabel);
@@ -59,6 +70,8 @@ public class Settings {
         settingsPanel.add(countLabel);
         settingsPanel.add(countSlider);
         settingsPanel.add(countValueLabel);
+        settingsPanel.add(collisionLabel);
+        settingsPanel.add(collisionToggle);
 
         settingsPanel.doLayout();
 

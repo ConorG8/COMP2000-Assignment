@@ -10,9 +10,6 @@ public class Main {
         frame.setResizable(true);
 
         frame.setVisible(true);
-
-        Settings.CELL_SIZE = 20; // Set the cell size
-        Settings.CELL_SPEED = 1.0; // Set the cell speed
     }
 }
 
