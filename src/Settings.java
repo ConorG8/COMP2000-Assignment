@@ -32,12 +32,12 @@ public class Settings {
 
         JLabel speedLabel = new JLabel("Speed");
         speedLabel.setForeground(Color.WHITE);
-        JSlider speedSlider = new JSlider(1, 10, (int) Settings.CELL_SPEED);
+        JSlider speedSlider = new JSlider(1, 100, (int) (Settings.CELL_SPEED * 10));
         speedSlider.setBackground(Color.WHITE);
         JLabel speedValueLabel = new JLabel(String.valueOf(Settings.CELL_SPEED));
         speedValueLabel.setForeground(Color.WHITE);
         speedSlider.addChangeListener(e -> {
-            Settings.CELL_SPEED = speedSlider.getValue();
+            Settings.CELL_SPEED = speedSlider.getValue() / 10.0;
             speedValueLabel.setText(String.valueOf(Settings.CELL_SPEED));
         });
 

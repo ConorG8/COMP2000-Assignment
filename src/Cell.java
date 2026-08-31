@@ -12,6 +12,8 @@ public class Cell {
     private int id;
     private CellState state;
     private Color color; // Default color for the cell
+    public boolean isMutated = false; // Flag to indicate if the cell is mutated
+    public int resistance = 0; // Resistance level for the cell
 
     private boolean collisionEnabled = Settings.hasCollision; // Collision enabled or not
 
@@ -27,12 +29,13 @@ public class Cell {
         this.velY = ((Math.random() * 3)-1) * speed;
     }
     
-    public Cell(double startX, double startY, int id, CellState initialState, Color color) {
+    public Cell(double startX, double startY, int id, CellState initialState, Color color, boolean isMutated) {
         this.x = startX;
         this.y = startY;
         this.id = id;
         this.state = initialState;
         this.color = color;
+        this.isMutated = isMutated;
         this.velX = ((Math.random() * 3)-1) * speed;
         this.velY = ((Math.random() * 3)-1) * speed;
     }    
@@ -45,6 +48,9 @@ public class Cell {
 
     public void changeState(CellState newState){
         this.state = newState;
+        if (!isMutated) { // Only change color if the cell is not mutated
+            this.color = newState.getCellColor();
+        }
     }
 
     public void draw(Graphics g) { // Drawing loop for the cell
@@ -69,7 +75,6 @@ public class Cell {
         CellState thisNewState = this.state.reactWith(opponent.getState());
         changeState(thisNewState);
         opponent.changeState(oppNewState);
-
         if (collisionEnabled) {
             bounceOff(opponent);
         }
