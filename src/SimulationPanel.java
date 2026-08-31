@@ -12,9 +12,11 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class SimulationPanel extends JPanel implements ActionListener{
-    private final List<Cell> cells = new ArrayList<>();
+public class SimulationPanel extends JPanel implements ActionListener {
+    private List<Cell> cells = new ArrayList<>();
     private Timer timer;
+    private int deadCellCount;
+    private int mutatedCellCount;
     public int simScreenX;
     public int simScreenY;
     public int offset;
@@ -26,8 +28,10 @@ public class SimulationPanel extends JPanel implements ActionListener{
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1200, 800));
         this.setLayout(null);
+        deadCellCount = 0;
+        mutatedCellCount = 0;
         offset = 10;
-        
+
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -38,7 +42,7 @@ public class SimulationPanel extends JPanel implements ActionListener{
         timer = new Timer(16, this);
         timer.start();
     }
-    
+
     private void createResetButton() {
         resetButton = new JButton("Reset Simulation");
         resetButton.addActionListener((ActionEvent e) -> {
@@ -47,9 +51,11 @@ public class SimulationPanel extends JPanel implements ActionListener{
         this.add(resetButton);
     }
 
-    public void resetSimulation(){
+    public void resetSimulation() {
         cells.clear();
         cellsCreated = false;
+        deadCellCount = 0;
+        mutatedCellCount = 0;
         updateDimensions();
         drawStats(this.getGraphics());
     }
@@ -57,22 +63,22 @@ public class SimulationPanel extends JPanel implements ActionListener{
     public void updateDimensions() {
         simScreenX = this.getWidth() - statScreenX - offset;
         simScreenY = this.getHeight() - offset;
-        
+
         // Create cells once dimensions are available
         if (!cellsCreated && simScreenX > 0 && simScreenY > 0) {
             createCells();
             cellsCreated = true;
         }
-        
+
         // Create button once dimensions are available
         if (!buttonCreated && simScreenX > 0 && simScreenY > 0) {
             createResetButton();
             buttonCreated = true;
         }
-        
+
         // Reposition button based on window size
         if (resetButton != null) {
-            resetButton.setBounds(simScreenX + offset, offset * 21, 180, 50);
+            resetButton.setBounds(simScreenX + offset, offset * 27, 180, 50);
         }
     }
 
@@ -88,25 +94,29 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
         for (Cell cell : cells) {
             cell.draw(g);
+            randomDeath(cell, cell.getId());
+            randomDuplication(cell);
         }
     }
 
     public void createCells() { // Create each cell, and add to the list with the given variables.
         for (int i = 0; i < 100; i++) {
             if (i < 80) {
-                // Minus 10 from the width and height of the screen to account for the diameter of the cell
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, NeutralState.INSTANCE)); 
-            } 
-            else if(i >= 80 && i <= 90){
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, InfectedState.INSTANCE));
-            }
-            else {
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i, AntivirusState.INSTANCE));
+                // Minus 10 from the width and height of the screen to account for the diameter
+                // of the cell
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i,
+                        NeutralState.INSTANCE));
+            } else if (i >= 80 && i <= 90) {
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i,
+                        InfectedState.INSTANCE));
+            } else {
+                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i,
+                        AntivirusState.INSTANCE));
             }
         }
     }
 
-    public void drawSimBorder(Graphics g){
+    public void drawSimBorder(Graphics g) {
         // Sim screen borders
         g.setColor(Color.BLACK);
         g.drawLine(simScreenX, offset, simScreenX, simScreenY);
@@ -118,7 +128,7 @@ public class SimulationPanel extends JPanel implements ActionListener{
         g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
     }
 
-    public void drawStats(Graphics g){
+    public void drawStats(Graphics g) {
         int neutralCount = 0;
         int infectedCount = 0;
         int antivirusCount = 0;
@@ -129,14 +139,14 @@ public class SimulationPanel extends JPanel implements ActionListener{
         g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         g.drawString("Total Cells: " + cells.size(), simScreenX + offset, offset * 10);
 
-        for(Cell c : cells){
-            if(c.getState().getType().equals("NEUTRAL")){
+        for (Cell c : cells) {
+            if (c.getState().getType().equals("NEUTRAL")) {
                 neutralCount++;
             }
-            if(c.getState().getType().equals("INFECTED")){
+            if (c.getState().getType().equals("INFECTED")) {
                 infectedCount++;
             }
-            if(c.getState().getType().equals("ANTIVIRUS")){
+            if (c.getState().getType().equals("ANTIVIRUS")) {
                 antivirusCount++;
             }
         }
@@ -146,8 +156,11 @@ public class SimulationPanel extends JPanel implements ActionListener{
         g.drawString("Infected Cells: " + infectedCount, simScreenX + offset, offset * 16);
         g.setColor(AntivirusState.INSTANCE.getCellColor());
         g.drawString("Antivirus Cells: " + antivirusCount, simScreenX + offset, offset * 19);
+        g.setColor(Color.DARK_GRAY);
+        g.drawString("Dead Cells: " + deadCellCount, simScreenX + offset, offset * 22);
+        g.setColor(Color.YELLOW);
+        g.drawString("Mutated Cells: " + mutatedCellCount, simScreenX + offset, offset * 25);
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -156,7 +169,7 @@ public class SimulationPanel extends JPanel implements ActionListener{
         }
 
         for (int i = 0; i < cells.size(); i++) { // Check cell collisions
-            for (int j = i+1; j < cells.size(); j++) {
+            for (int j = i + 1; j < cells.size(); j++) {
                 Cell a = cells.get(i);
                 Cell b = cells.get(j);
 
@@ -167,5 +180,24 @@ public class SimulationPanel extends JPanel implements ActionListener{
         }
 
         repaint(); // draw next frame
+    }
+
+    public void randomDeath(Cell c, int id) {
+        double randomNum = Math.random();
+        if (randomNum < 0.0001) { // small chance to die
+            cells.remove(id);
+            deadCellCount++;
+        }
+    }
+
+    public void randomDuplication(Cell c){
+        double randomNum = Math.random();
+        if(c.getState().equals(InfectedState.INSTANCE) || c.getState().equals(AntivirusState.INSTANCE)){ // If antivirus or infected
+            if(randomNum < 0.0002){ // small chance to duplicate
+                Cell newCell = c;
+                cells.add(newCell);
+                mutatedCellCount++;
+            }
+        }
     }
 }
