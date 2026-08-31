@@ -48,9 +48,6 @@ public class Cell {
 
     public void changeState(CellState newState){
         this.state = newState;
-        if (!isMutated) { // Only change color if the cell is not mutated
-            this.color = newState.getCellColor();
-        }
     }
 
     public void draw(Graphics g) { // Drawing loop for the cell
@@ -61,12 +58,17 @@ public class Cell {
             currentSize = (int) (size + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
         }
 
-        g.setColor(color);
+        g.setColor(state.getCellColor());
         
         int offset = (currentSize - size) / 2;
         g.fillOval((int) x - offset, (int) y - offset, currentSize, currentSize);
 
-        g.setColor(Color.BLACK);
+        if(isMutated) { // Draw a border if the cell is mutated
+            g.setColor(Color.YELLOW);
+        }
+        else {
+            g.setColor(Color.BLACK);
+        }
         g.drawOval((int) x-offset, (int) y-offset, currentSize, currentSize);
     }
 
