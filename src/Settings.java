@@ -1,0 +1,68 @@
+
+import java.awt.Color;
+import java.awt.GridLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+
+public class Settings {
+    public static int CELL_SIZE = 20;
+    public static double CELL_SPEED = 1.0;
+    public static int CELL_COUNT = 100; // Total number of cells in the simulation
+
+    public JPanel settingsPanel() {
+        // Create a settings panel with sliders for cell size and speed
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setLayout(new GridLayout(3, 3, 5, 5));
+        settingsPanel.setBackground(Color.DARK_GRAY);
+        settingsPanel.setOpaque(true);
+
+        JLabel sizeLabel = new JLabel("Size");
+        sizeLabel.setForeground(Color.WHITE);
+        JSlider sizeSlider = new JSlider(5, 50, Settings.CELL_SIZE);
+        sizeSlider.setBackground(Color.WHITE);
+        JLabel sizeValueLabel = new JLabel(String.valueOf(Settings.CELL_SIZE));
+        sizeValueLabel.setForeground(Color.WHITE);
+        sizeSlider.addChangeListener(e -> {
+            Settings.CELL_SIZE = sizeSlider.getValue();
+            sizeValueLabel.setText(String.valueOf(Settings.CELL_SIZE));
+        });
+
+        JLabel speedLabel = new JLabel("Speed");
+        speedLabel.setForeground(Color.WHITE);
+        JSlider speedSlider = new JSlider(1, 10, (int) Settings.CELL_SPEED);
+        speedSlider.setBackground(Color.WHITE);
+        JLabel speedValueLabel = new JLabel(String.valueOf(Settings.CELL_SPEED));
+        speedValueLabel.setForeground(Color.WHITE);
+        speedSlider.addChangeListener(e -> {
+            Settings.CELL_SPEED = speedSlider.getValue();
+            speedValueLabel.setText(String.valueOf(Settings.CELL_SPEED));
+        });
+
+        JLabel countLabel = new JLabel("Count");
+        countLabel.setForeground(Color.WHITE);
+        JSlider countSlider = new JSlider(10, 200, Settings.CELL_COUNT);
+        countSlider.setBackground(Color.WHITE);
+        JLabel countValueLabel = new JLabel(String.valueOf(Settings.CELL_COUNT));
+        countValueLabel.setForeground(Color.WHITE);
+        countSlider.addChangeListener(e -> {
+            Settings.CELL_COUNT = countSlider.getValue();
+            countValueLabel.setText(String.valueOf(Settings.CELL_COUNT));
+        });
+
+        settingsPanel.add(sizeLabel);
+        settingsPanel.add(sizeSlider);
+        settingsPanel.add(sizeValueLabel);
+        settingsPanel.add(speedLabel);
+        settingsPanel.add(speedSlider);
+        settingsPanel.add(speedValueLabel);
+        settingsPanel.add(countLabel);
+        settingsPanel.add(countSlider);
+        settingsPanel.add(countValueLabel);
+
+        settingsPanel.doLayout();
+
+        return settingsPanel;
+    }
+
+}
