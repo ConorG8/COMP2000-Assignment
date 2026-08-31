@@ -218,8 +218,8 @@ public class SimulationPanel extends JPanel implements ActionListener {
         double randomNum = Math.random();
         if(c.getState().equals(InfectedState.INSTANCE) || c.getState().equals(AntivirusState.INSTANCE)){ // If antivirus or infected
             if(randomNum < 0.0002){ // small chance to duplicate
-                Cell newCell = c;
-                cells.add(newCell);
+                // Cell newCell = c;
+                cells.add(new Cell(c.getX(), c.getY(), cells.size(), c.getState()));
                 mutatedCellCount++;
             }
         }
