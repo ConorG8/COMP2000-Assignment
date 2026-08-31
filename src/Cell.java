@@ -9,6 +9,9 @@ public class Cell {
     private double velY;
     public double speed = Settings.CELL_SPEED;
     private int size = Settings.CELL_SIZE;
+
+    private double speedMultiplier = 1.0;
+    private double sizeMultiplier = 1.0;
     private int id;
     private CellState state;
     private Color color; // Default color for the cell
@@ -42,9 +45,11 @@ public class Cell {
 
     public double getX() { return x; }
     public double getY() { return y; }
-    public int getSize() { return size; }
     public int getId() { return id; }
     public CellState getState() { return state; }
+    public int getSize() {
+    return (int) Math.round(size * sizeMultiplier);
+     }
 
     public void changeState(CellState newState){
         this.state = newState;
@@ -52,10 +57,10 @@ public class Cell {
 
     public void draw(Graphics g) { // Drawing loop for the cell
         tick++;
-        int currentSize = size; // For size changes
+        int currentSize = getSize(); // For size changes
 
         if(state.getType().equals("INFECTED")) { // "Pulsate" if the cell is infected
-            currentSize = (int) (size + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
+            currentSize = (int) (getSize() + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
         }
 
         g.setColor(state.getCellColor());
@@ -119,30 +124,52 @@ public class Cell {
         if (x <= panelMinWidth) {
             x = panelMinWidth;
             velX = -velX;
-        } else if (x + size >= panelMaxWidth) {
-            x = panelMaxWidth - size;
+        } else if (x + getSize() >= panelMaxWidth) {
+            x = panelMaxWidth - getSize();
             velX = -velX;
         }
 
         if (y <= panelMinHeight) {
             y = panelMinHeight;
             velY = -velY;
-        } else if (y + size >= panelMaxHeight) {
-            y = panelMaxHeight - size;
+        } else if (y + getSize() >= panelMaxHeight) {
+            y = panelMaxHeight - getSize();
             velY = -velY;
         }
     }
 
-    public boolean collidesWith(Cell other) { // Collision logic
-        int radius = size / 2;
-        double centXA = x + radius;
-        double centYA = y + radius;
-        double centXB = other.x + radius;
-        double centYB = other.y + radius;
+   public boolean collidesWith(Cell other) { // Collision logic
 
-        if (Math.hypot(centXB - centXA, centYB - centYA) <= size) {
-            return true;
-        }
-        return false;
+    int radiusA = getSize() / 2;
+    int radiusB = other.getSize() / 2;
+
+    double centXA = x + radiusA;
+    double centYA = y + radiusA;
+
+    double centXB = other.x + radiusB;
+    double centYB = other.y + radiusB;
+
+    double distance = Math.hypot(
+        centXB - centXA,
+        centYB - centYA
+    );
+
+    return distance <= radiusA + radiusB;
+     }
+
+    public void setSpeedMultiplier(double multiplier) {
+
+    double speedChange = multiplier / speedMultiplier;
+
+    velX *= speedChange;
+    velY *= speedChange;
+
+    speedMultiplier = multiplier;
+     }
+
+
+public void setSizeMultiplier(double multiplier) {
+
+    sizeMultiplier = multiplier;
     }
 }
