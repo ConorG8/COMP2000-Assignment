@@ -27,6 +27,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
     private int cellCount = Settings.CELL_COUNT; // Total number of cells in the simulation
     private int deadCellCount;
     private int mutatedCellCount;
+    private int simTick = 0;
     
 
     public SimulationPanel() {
@@ -188,6 +189,8 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        simTick ++;
+
         for (Cell cell : cells) { // For each cell, move
             cell.move(simScreenX, simScreenY, offset, offset);
         }
@@ -201,6 +204,10 @@ public class SimulationPanel extends JPanel implements ActionListener {
                     a.onCollision(b);
                 }
             }
+        }
+
+        if(simTick % 31  == 0){
+            // TODO: add this 
         }
 
         repaint(); // draw next frame

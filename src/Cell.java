@@ -14,6 +14,8 @@ public class Cell {
     private Color color; // Default color for the cell
     public boolean isMutated = false; // Flag to indicate if the cell is mutated
     public int resistance = 0; // Resistance level for the cell
+    public int infectionsCaused = 0;
+    public boolean hasBeenInfected = false;
 
     private boolean collisionEnabled = Settings.hasCollision; // Collision enabled or not
 
@@ -73,8 +75,19 @@ public class Cell {
     }
 
     public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
-        CellState oppNewState = opponent.state.reactWith(this.getState());
-        CellState thisNewState = this.state.reactWith(opponent.getState());
+        CellState thisOriginState = this.getState();
+        CellState oppOriginState = opponent.getState();
+        CellState oppNewState = opponent.state.reactWith(thisOriginState);
+        CellState thisNewState = this.state.reactWith(oppOriginState);
+
+        if (oppOriginState == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
+            infectionsCaused ++;
+            opponent.hasBeenInfected = true;
+        }
+        else if (thisOriginState == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
+            opponent.infectionsCaused ++;
+            hasBeenInfected = true;
+        }
         changeState(thisNewState);
         opponent.changeState(oppNewState);
         if (collisionEnabled) {
