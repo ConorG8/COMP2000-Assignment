@@ -7,10 +7,13 @@ public class Cell {
     private double y;
     private double velX;
     private double velY;
+    public double speed = Settings.CELL_SPEED;
 
-    private int size = 20;
+    private int size = Settings.CELL_SIZE;
     private int id;
     private CellState state;
+
+    private boolean collisionEnabled = Settings.hasCollision; // Collision enabled or not
 
     private int tick = 0;
 
@@ -19,8 +22,8 @@ public class Cell {
         this.y = startY;
         this.id = id;
         this.state = initialState;
-        this.velX = (Math.random() * 3)-1;
-        this.velY = (Math.random() * 3)-1;
+        this.velX = ((Math.random() * 3)-1) * speed;
+        this.velY = ((Math.random() * 3)-1) * speed;
     }       
 
     public double getX() { return x; }
@@ -55,6 +58,37 @@ public class Cell {
         CellState thisNewState = this.state.reactWith(opponent.getState());
         changeState(thisNewState);
         opponent.changeState(oppNewState);
+
+        if (collisionEnabled) {
+            bounceOff(opponent);
+        }
+    }
+
+    public void bounceOff(Cell opponent) { // Bounce off logic
+        double tempVelX = this.velX;
+        double tempVelY = this.velY;
+
+        this.velX = opponent.velX;
+        this.velY = opponent.velY;
+
+        opponent.velX = tempVelX;
+        opponent.velY = tempVelY;
+        
+        // Separate cells to prevent sticking
+        double dx = opponent.x - this.x;
+        double dy = opponent.y - this.y;
+        double distance = Math.hypot(dx, dy);
+        
+        if (distance < size) {
+            double overlap = size - distance;
+            double separationX = (dx / distance) * (overlap / 2 + 1);
+            double separationY = (dy / distance) * (overlap / 2 + 1);
+            
+            this.x -= separationX;
+            this.y -= separationY;
+            opponent.x += separationX;
+            opponent.y += separationY;
+        }
     }
 
     public void move(int panelMaxWidth, int panelMaxHeight, int panelMinWidth, int panelMinHeight) { // Move logic

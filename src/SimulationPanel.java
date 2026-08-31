@@ -13,10 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class SimulationPanel extends JPanel implements ActionListener {
-    private List<Cell> cells = new ArrayList<>();
+    private final List<Cell> cells = new ArrayList<>();
     private Timer timer;
-    private int deadCellCount;
-    private int mutatedCellCount;
     public int simScreenX;
     public int simScreenY;
     public int offset;
@@ -24,6 +22,12 @@ public class SimulationPanel extends JPanel implements ActionListener {
     private boolean cellsCreated = false;
     private JButton resetButton;
     private boolean buttonCreated = false;
+    private JPanel settingsPanel;
+    private boolean settingsCreated = false;
+    private int cellCount = Settings.CELL_COUNT; // Total number of cells in the simulation
+    private int deadCellCount;
+    private int mutatedCellCount;
+    
 
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1200, 800));
@@ -52,6 +56,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public void resetSimulation() {
+        cellCount = Settings.CELL_COUNT;
         cells.clear();
         cellsCreated = false;
         deadCellCount = 0;
@@ -75,10 +80,27 @@ public class SimulationPanel extends JPanel implements ActionListener {
             createResetButton();
             buttonCreated = true;
         }
-
+        
+        // Create settings once dimensions are available
+        if (!settingsCreated && simScreenX > 0 && simScreenY > 0) {
+            settingsPanel = new Settings().settingsPanel();
+            settingsPanel.setBounds(simScreenX + offset, offset * 26, 180, 120);
+            this.add(settingsPanel);
+            settingsPanel.revalidate();
+            settingsPanel.repaint();
+            settingsCreated = true;
+        }
+        
         // Reposition button based on window size
         if (resetButton != null) {
-            resetButton.setBounds(simScreenX + offset, offset * 27, 180, 50);
+            resetButton.setBounds(simScreenX + offset, offset * 39, 180, 50);
+        }
+        
+        // Reposition settings based on window size
+        if (settingsPanel != null) {
+            settingsPanel.setBounds(simScreenX + offset, offset * 26, 180, 120);
+            settingsPanel.revalidate();
+            settingsPanel.repaint();
         }
     }
 
@@ -100,18 +122,19 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public void createCells() { // Create each cell, and add to the list with the given variables.
-        for (int i = 0; i < 100; i++) {
-            if (i < 80) {
-                // Minus 10 from the width and height of the screen to account for the diameter
-                // of the cell
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i,
-                        NeutralState.INSTANCE));
-            } else if (i >= 80 && i <= 90) {
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i,
-                        InfectedState.INSTANCE));
-            } else {
-                cells.add(new Cell(Math.random() * (simScreenX - offset), Math.random() * (simScreenY - offset), i,
-                        AntivirusState.INSTANCE));
+        for (int i = 0; i < cellCount; i++) {
+            // Generate random position within the simulation area (accounting for offset and cell size)
+            double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
+            double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
+            
+            if (i < cellCount * 0.8) { // 80% Neutral, 10% Infected, 10% Antivirus
+                cells.add(new Cell(randomX, randomY, i, NeutralState.INSTANCE)); 
+            } 
+            else if(i >= cellCount * 0.8 && i < cellCount * 0.9){
+                cells.add(new Cell(randomX, randomY, i, InfectedState.INSTANCE));
+            }
+            else {
+                cells.add(new Cell(randomX, randomY, i, AntivirusState.INSTANCE));
             }
         }
     }
