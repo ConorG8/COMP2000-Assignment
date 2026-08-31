@@ -5,8 +5,9 @@ public class Main {
         JFrame frame = new JFrame("Pandemic Simulator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new SimulationPanel());
-        frame.pack();
+        frame.setSize(1200, 800);
         frame.setLocationRelativeTo(null);
+        frame.setResizable(true);
 
         frame.setVisible(true);
     }

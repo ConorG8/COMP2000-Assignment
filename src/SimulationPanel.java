@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
@@ -16,18 +18,34 @@ public class SimulationPanel extends JPanel implements ActionListener{
     public int simScreenY;
     public int offset;
     public int statScreenX = 200;
+    private boolean cellsCreated = false;
 
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1200, 800));
         this.setBackground(Color.black);
         offset = 10;
-        simScreenX = this.getPreferredSize().width - statScreenX - offset;
-        simScreenY = this.getPreferredSize().height - offset;
-
-        createCells();
+        
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateDimensions();
+            }
+        });
 
         timer = new Timer(16, this);
         timer.start();
+        
+    }
+    
+    public void updateDimensions() {
+        simScreenX = this.getWidth() - statScreenX - offset;
+        simScreenY = this.getHeight() - offset;
+        
+        // Create cells once dimensions are available
+        if (!cellsCreated && simScreenX > 0 && simScreenY > 0) {
+            createCells();
+            cellsCreated = true;
+        }
     }
 
     @Override
