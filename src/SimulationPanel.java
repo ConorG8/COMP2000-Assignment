@@ -8,6 +8,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -19,10 +20,12 @@ public class SimulationPanel extends JPanel implements ActionListener{
     public int offset;
     public int statScreenX = 200;
     private boolean cellsCreated = false;
+    private JButton resetButton;
+    private boolean buttonCreated = false;
 
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1200, 800));
-        this.setBackground(Color.black);
+        this.setLayout(null);
         offset = 10;
         
         this.addComponentListener(new ComponentAdapter() {
@@ -34,9 +37,23 @@ public class SimulationPanel extends JPanel implements ActionListener{
 
         timer = new Timer(16, this);
         timer.start();
-        
     }
     
+    private void createResetButton() {
+        resetButton = new JButton("Reset Simulation");
+        resetButton.addActionListener((ActionEvent e) -> {
+            resetSimulation();
+        });
+        this.add(resetButton);
+    }
+
+    public void resetSimulation(){
+        cells.clear();
+        cellsCreated = false;
+        updateDimensions();
+        drawStats(this.getGraphics());
+    }
+
     public void updateDimensions() {
         simScreenX = this.getWidth() - statScreenX - offset;
         simScreenY = this.getHeight() - offset;
@@ -46,12 +63,23 @@ public class SimulationPanel extends JPanel implements ActionListener{
             createCells();
             cellsCreated = true;
         }
+        
+        // Create button once dimensions are available
+        if (!buttonCreated && simScreenX > 0 && simScreenY > 0) {
+            createResetButton();
+            buttonCreated = true;
+        }
+        
+        // Reposition button based on window size
+        if (resetButton != null) {
+            resetButton.setBounds(simScreenX + offset, offset * 21, 180, 50);
+        }
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g); 
-
+        super.paintComponent(g);
+        this.setBackground(Color.BLACK);
         g.setColor(Color.BLACK);
 
         drawSimBorder(g);
@@ -94,9 +122,12 @@ public class SimulationPanel extends JPanel implements ActionListener{
         int neutralCount = 0;
         int infectedCount = 0;
         int antivirusCount = 0;
-        g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        g.setFont(new Font("Times New Roman", Font.PLAIN, 30));
         g.setColor(Color.WHITE);
-        g.drawString("Total Cells: " + cells.size(), simScreenX + offset, offset * 3);
+        g.drawString("Pandemic", simScreenX + offset, offset * 3);
+        g.drawString("Simulator", simScreenX + offset, offset * 6);
+        g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        g.drawString("Total Cells: " + cells.size(), simScreenX + offset, offset * 10);
 
         for(Cell c : cells){
             if(c.getState().getType().equals("NEUTRAL")){
@@ -110,11 +141,11 @@ public class SimulationPanel extends JPanel implements ActionListener{
             }
         }
         g.setColor(NeutralState.INSTANCE.getCellColor());
-        g.drawString("Neutral Cells: " + neutralCount, simScreenX + offset, offset * 6);
+        g.drawString("Neutral Cells: " + neutralCount, simScreenX + offset, offset * 13);
         g.setColor(InfectedState.INSTANCE.getCellColor());
-        g.drawString("Infected Cells: " + infectedCount, simScreenX + offset, offset * 9);
+        g.drawString("Infected Cells: " + infectedCount, simScreenX + offset, offset * 16);
         g.setColor(AntivirusState.INSTANCE.getCellColor());
-        g.drawString("Antivirus Cells: " + antivirusCount, simScreenX + offset, offset * 12);
+        g.drawString("Antivirus Cells: " + antivirusCount, simScreenX + offset, offset * 19);
     }
 
 
