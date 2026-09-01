@@ -10,12 +10,14 @@ public class Settings {
     public static int CELL_SIZE = 20;
     public static double CELL_SPEED = 1.0;
     public static int CELL_COUNT = 100;
+    public static int INFECTED_COUNT = 1;
+    public static int ANTIVIRUS_COUNT = 1;
     public static boolean hasCollision = true;
 
     public JPanel settingsPanel() {
         // Create a settings panel with sliders for cell size and speed
         JPanel settingsPanel = new JPanel();
-        settingsPanel.setLayout(new GridLayout(4, 3, 5, 5));
+        settingsPanel.setLayout(new GridLayout(6, 3, 5, 5));
         settingsPanel.setBackground(Color.DARK_GRAY);
         settingsPanel.setOpaque(true);
 
@@ -52,6 +54,28 @@ public class Settings {
             countValueLabel.setText(String.valueOf(Settings.CELL_COUNT));
         });
 
+        JLabel infectedCountLabel = new JLabel("InfCells");
+        infectedCountLabel.setForeground(Color.WHITE);
+        JSlider infectedCountSlider = new JSlider(1, 20, Settings.INFECTED_COUNT);
+        infectedCountSlider.setBackground(Color.WHITE);
+        JLabel infectedCountValueLabel = new JLabel(String.valueOf(Settings.INFECTED_COUNT));
+        infectedCountValueLabel.setForeground(Color.WHITE);
+        infectedCountSlider.addChangeListener(e -> {
+            Settings.INFECTED_COUNT = infectedCountSlider.getValue();
+            infectedCountValueLabel.setText(String.valueOf(Settings.INFECTED_COUNT));
+        });
+
+        JLabel antivirusCountLabel = new JLabel("AntiCells");
+        antivirusCountLabel.setForeground(Color.WHITE);
+        JSlider antivirusCountSlider = new JSlider(1, 20, Settings.ANTIVIRUS_COUNT);
+        antivirusCountSlider.setBackground(Color.WHITE);
+        JLabel antivirusCountValueLabel = new JLabel(String.valueOf(Settings.ANTIVIRUS_COUNT));
+        antivirusCountValueLabel.setForeground(Color.WHITE);
+        antivirusCountSlider.addChangeListener(e -> {
+            Settings.ANTIVIRUS_COUNT = antivirusCountSlider.getValue();
+            antivirusCountValueLabel.setText(String.valueOf(Settings.ANTIVIRUS_COUNT));
+        });
+
         JLabel collisionLabel = new JLabel("Collision");
         collisionLabel.setForeground(Color.WHITE);
         JToggleButton collisionToggle = new JToggleButton(Settings.hasCollision ? "On" : "Off");
@@ -70,6 +94,12 @@ public class Settings {
         settingsPanel.add(countLabel);
         settingsPanel.add(countSlider);
         settingsPanel.add(countValueLabel);
+        settingsPanel.add(infectedCountLabel);
+        settingsPanel.add(infectedCountSlider);
+        settingsPanel.add(infectedCountValueLabel);
+        settingsPanel.add(antivirusCountLabel);
+        settingsPanel.add(antivirusCountSlider);
+        settingsPanel.add(antivirusCountValueLabel);
         settingsPanel.add(collisionLabel);
         settingsPanel.add(collisionToggle);
 
