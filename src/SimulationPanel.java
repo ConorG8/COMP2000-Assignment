@@ -151,19 +151,19 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public void createCells() {
-        for (int i = 0; i < cellCount; i++) {
-            double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
-            double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
+    for (int i = 0; i < cellCount; i++) {
+        double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
+        double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
 
-            if (i < cellCount * 0.97) {
-                cells.add(new Cell(randomX, randomY, i, NeutralState.INSTANCE));
-            } else if (i >= cellCount * 0.98 && i < cellCount * 0.99) {
-                cells.add(new Cell(randomX, randomY, i, InfectedState.INSTANCE));
-            } else {
-                cells.add(new Cell(randomX, randomY, i, AntivirusState.INSTANCE));
-            }
+        if (i < Settings.INFECTED_COUNT) {
+            cells.add(new Cell(randomX, randomY, i, InfectedState.INSTANCE));
+        } else if (i < Settings.ANTIVIRUS_COUNT + Settings.INFECTED_COUNT) {
+            cells.add(new Cell(randomX, randomY, i, AntivirusState.INSTANCE));
+        } else {
+            cells.add(new Cell(randomX, randomY, i, NeutralState.INSTANCE));
         }
     }
+}
 
     public void drawSimBorder(Graphics g) {
         // Sim screen borders
@@ -221,42 +221,33 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-    simTick++;
-      
-    long currentTime = System.currentTimeMillis();
+        simTick++;
+        long currentTime = System.currentTimeMillis();
+        long deltaTime = currentTime - lastUpdateTime;
+        lastUpdateTime = currentTime;
 
-    long deltaTime = currentTime - lastUpdateTime;
+        // Move each cell.
+        for (Cell cell : cells) {
+            cell.move(simScreenX, simScreenY, offset, offset);
+        }
+        // Check cell collisions.
+        for (int i = 0; i < cells.size(); i++) {
 
-    lastUpdateTime = currentTime;
+            for (int j = i + 1; j < cells.size(); j++) {
 
+                Cell a = cells.get(i);
+                Cell b = cells.get(j);
 
-    // Move each cell.
-    for (Cell cell : cells) {
+                if (a.collidesWith(b)) {
 
-        cell.move(simScreenX, simScreenY, offset, offset);
-    }
-
-
-    // Check cell collisions.
-    for (int i = 0; i < cells.size(); i++) {
-
-        for (int j = i + 1; j < cells.size(); j++) {
-
-            Cell a = cells.get(i);
-            Cell b = cells.get(j);
-
-            if (a.collidesWith(b)) {
-
-                a.onCollision(b);
+                    a.onCollision(b);
+                }
             }
         }
-    }
 
 
-    // Update the season system.
-    seasonManager.update(cells, deltaTime);
-    
-
+        // Update the season system.
+        seasonManager.update(cells, deltaTime);
 
         List<Cell> toRemove = new ArrayList<>();
         List<Cell> toAdd = new ArrayList<>();
@@ -287,11 +278,12 @@ public class SimulationPanel extends JPanel implements ActionListener {
                 c.infectionsCaused = 0;
                 c.infectedThisWindow = false;
             }
-    // Draw next frame.
-    repaint();
+        }
+        // Draw next frame.
+        repaint();
     }
 
-    /*public void randomDeath(Cell c, int id) {
+    public void randomDeath(Cell c, int id) {
         double randomNum = Math.random();
         if (randomNum < 0.0001) { // small chance to die
             cells.remove(id);
@@ -319,8 +311,6 @@ public class SimulationPanel extends JPanel implements ActionListener {
     public List<SimulationStats> getStatsHistory(){
         return statsHistory;
     }
-}
-    }*/
 
          public void setSimulationBackground(Color background) {
             simulationBackground = background;
