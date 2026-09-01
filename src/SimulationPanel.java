@@ -32,7 +32,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
     private float r0 = 0;
 
     public SimulationPanel() {
-        this.setPreferredSize(new Dimension(1200, 800));
+        this.setPreferredSize(new Dimension(1200, 1200));
         this.setLayout(null);
         deadCellCount = 0;
         mutatedCellCount = 0;
@@ -86,7 +86,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
         if (!settingsCreated && simScreenX > 0 && simScreenY > 0) {
             settingsPanel = new Settings().settingsPanel();
-            settingsPanel.setBounds(simScreenX + offset, offset * 26, 180, 120);
+            settingsPanel.setBounds(simScreenX + offset, offset * 29, 180, 120);
             this.add(settingsPanel);
             settingsPanel.revalidate();
             settingsPanel.repaint();
@@ -94,11 +94,11 @@ public class SimulationPanel extends JPanel implements ActionListener {
         }
 
         if (resetButton != null) {
-            resetButton.setBounds(simScreenX + offset, offset * 39, 180, 50);
+            resetButton.setBounds(simScreenX + offset, offset * 42, 180, 50);
         }
 
         if (settingsPanel != null) {
-            settingsPanel.setBounds(simScreenX + offset, offset * 26, 180, 120);
+            settingsPanel.setBounds(simScreenX + offset, offset * 29, 180, 120);
             settingsPanel.revalidate();
             settingsPanel.repaint();
         }
@@ -123,9 +123,9 @@ public class SimulationPanel extends JPanel implements ActionListener {
             double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
             double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
 
-            if (i < cellCount * 0.8) {
+            if (i < cellCount * 0.97) {
                 cells.add(new Cell(randomX, randomY, i, NeutralState.INSTANCE));
-            } else if (i >= cellCount * 0.8 && i < cellCount * 0.9) {
+            } else if (i >= cellCount * 0.98 && i < cellCount * 0.99) {
                 cells.add(new Cell(randomX, randomY, i, InfectedState.INSTANCE));
             } else {
                 cells.add(new Cell(randomX, randomY, i, AntivirusState.INSTANCE));
@@ -143,9 +143,6 @@ public class SimulationPanel extends JPanel implements ActionListener {
         g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
     }
 
-    /** Counts cells by type in one pass. Index 0 = neutral, 1 = infected, 2 = antivirus.
-     *  Shared by drawStats (display) and actionPerformed (snapshot creation) so the
-     *  counting logic only exists in one place. */
     public int[] countByType() {
         int neutral = 0, infected = 0, antivirus = 0;
         for (Cell c : cells) {
@@ -180,7 +177,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
         g.setColor(Color.yellow);
         g.drawString("Mutated Cells: " + mutatedCellCount, simScreenX + offset, offset * 25);
         g.setColor(Color.magenta);
-        g.drawString("R0 Value: " + r0, simScreenX + offset, offset * 50);
+        g.drawString("R0 Value: " + r0, simScreenX + offset, offset * 28);
     }
 
     @Override
@@ -213,6 +210,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
                 toAdd.add(new Cell(c.getX(), c.getY(), cells.size(), c.getState(), Color.ORANGE, true));
             }
         }
+
         cells.removeAll(toRemove);
         deadCellCount += toRemove.size();
         cells.addAll(toAdd);
@@ -248,5 +246,9 @@ public class SimulationPanel extends JPanel implements ActionListener {
             return 0;
         }
         return totalInfectionsCaused / r0InfectedCount;
+    }
+
+    public List<SimulationStats> getStatsHistory(){
+        return statsHistory;
     }
 }
