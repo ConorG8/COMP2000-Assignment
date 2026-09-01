@@ -11,10 +11,15 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.JCheckBox;
 
 public class SimulationPanel extends JPanel implements ActionListener {
     private final List<Cell> cells = new ArrayList<>();
     private final List<SimulationStats> statsHistory = new ArrayList<>();
+    private SeasonManager seasonManager;
+    private long lastUpdateTime;
+    private Color simulationBackground = Color.LIGHT_GRAY;
+    private JCheckBox seasonsCheckBox;
     private Timer timer;
     public int simScreenX;
     public int simScreenY;
@@ -34,6 +39,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1200, 1200));
         this.setLayout(null);
+        this.setBackground(Color.BLACK);
         deadCellCount = 0;
         mutatedCellCount = 0;
         offset = 10;
@@ -44,6 +50,10 @@ public class SimulationPanel extends JPanel implements ActionListener {
                 updateDimensions();
             }
         });
+
+        seasonManager = new SeasonManager(this);
+
+    lastUpdateTime = System.currentTimeMillis();
 
         timer = new Timer(16, this);
         timer.start();
@@ -66,8 +76,21 @@ public class SimulationPanel extends JPanel implements ActionListener {
         mutatedCellCount = 0;
         simTick = 0;
         r0 = 0;
+        seasonManager.reset();
+        lastUpdateTime = System.currentTimeMillis();
         updateDimensions();
-        drawStats(this.getGraphics());
+        repaint();
+    }
+
+    private void createSeasonsCheckBox() {
+        seasonsCheckBox = new JCheckBox("Enable Seasons", true);
+
+        seasonsCheckBox.addActionListener(e -> {
+            seasonManager.setEnabled(seasonsCheckBox.isSelected());
+            repaint();
+        });
+
+        this.add(seasonsCheckBox);
     }
 
     public void updateDimensions() {
@@ -92,9 +115,14 @@ public class SimulationPanel extends JPanel implements ActionListener {
             settingsPanel.repaint();
             settingsCreated = true;
         }
-
+        
+        //Create Seasonal Checkbox once dimensions are available
+        if (seasonsCheckBox == null && simScreenX > 0 && simScreenY > 0) {
+            createSeasonsCheckBox();
+        }
+        // Reposition button based on window size
         if (resetButton != null) {
-            resetButton.setBounds(simScreenX + offset, offset * 42, 180, 50);
+            resetButton.setBounds(simScreenX + offset, offset * 43, 180, 50);
         }
 
         if (settingsPanel != null) {
@@ -102,13 +130,17 @@ public class SimulationPanel extends JPanel implements ActionListener {
             settingsPanel.revalidate();
             settingsPanel.repaint();
         }
+
+        // Reposition Checkbox based on window size
+        if (seasonsCheckBox != null) {
+            seasonsCheckBox.setBounds(simScreenX + offset, offset * 39, 170, 25);
+        }
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        this.setBackground(Color.BLACK);
-        g.setColor(Color.BLACK);
+        g.setColor(simulationBackground);
 
         drawSimBorder(g);
         drawStats(g);
@@ -134,12 +166,16 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public void drawSimBorder(Graphics g) {
+        // Sim screen borders
+        g.setColor(simulationBackground);
+        g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
         g.setColor(Color.BLACK);
         g.drawLine(simScreenX, offset, simScreenX, simScreenY);
         g.drawLine(offset, offset, offset, simScreenY);
         g.drawLine(offset, offset, simScreenX, offset);
         g.drawLine(offset, simScreenY, simScreenX, simScreenY);
-        g.setColor(Color.LIGHT_GRAY);
+        // Sim screen background
+        g.setColor(simulationBackground);
         g.fillRect(offset, offset, simScreenX - offset, simScreenY - offset);
     }
 
@@ -160,7 +196,10 @@ public class SimulationPanel extends JPanel implements ActionListener {
         int antivirusCount = counts[2];
 
         g.setFont(new Font("Times New Roman", Font.PLAIN, 30));
+        g.setColor(Color.BLACK);
+        g.drawString("Season: " + seasonManager.getCurrentSeason(), 10, simScreenY - 35);
         g.setColor(Color.WHITE);
+        g.drawString("Next Season: " + seasonManager.getSecondsRemaining() + "s", 10, simScreenY - 10);
         g.drawString("Pandemic", simScreenX + offset, offset * 3);
         g.drawString("Simulator", simScreenX + offset, offset * 6);
         g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
@@ -182,22 +221,42 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        simTick++;
+    simTick++;
+      
+    long currentTime = System.currentTimeMillis();
 
-        for (Cell cell : cells) {
-            cell.move(simScreenX, simScreenY, offset, offset);
-        }
+    long deltaTime = currentTime - lastUpdateTime;
 
-        for (int i = 0; i < cells.size(); i++) {
-            for (int j = i + 1; j < cells.size(); j++) {
-                Cell a = cells.get(i);
-                Cell b = cells.get(j);
+    lastUpdateTime = currentTime;
 
-                if (a.collidesWith(b)) {
-                    a.onCollision(b);
-                }
+
+    // Move each cell.
+    for (Cell cell : cells) {
+
+        cell.move(simScreenX, simScreenY, offset, offset);
+    }
+
+
+    // Check cell collisions.
+    for (int i = 0; i < cells.size(); i++) {
+
+        for (int j = i + 1; j < cells.size(); j++) {
+
+            Cell a = cells.get(i);
+            Cell b = cells.get(j);
+
+            if (a.collidesWith(b)) {
+
+                a.onCollision(b);
             }
         }
+    }
+
+
+    // Update the season system.
+    seasonManager.update(cells, deltaTime);
+    
+
 
         List<Cell> toRemove = new ArrayList<>();
         List<Cell> toAdd = new ArrayList<>();
@@ -228,6 +287,15 @@ public class SimulationPanel extends JPanel implements ActionListener {
                 c.infectionsCaused = 0;
                 c.infectedThisWindow = false;
             }
+    // Draw next frame.
+    repaint();
+    }
+
+    /*public void randomDeath(Cell c, int id) {
+        double randomNum = Math.random();
+        if (randomNum < 0.0001) { // small chance to die
+            cells.remove(id);
+            deadCellCount++;
         }
 
         repaint();
@@ -252,3 +320,28 @@ public class SimulationPanel extends JPanel implements ActionListener {
         return statsHistory;
     }
 }
+    }*/
+
+         public void setSimulationBackground(Color background) {
+            simulationBackground = background;
+            repaint();
+    }
+
+
+    public void incrementDeadCellCount() {
+
+        deadCellCount++;
+     }
+
+
+    public void incrementMutatedCellCount() {
+
+        mutatedCellCount++;
+     }
+
+     @Override
+    public void addNotify() {
+        super.addNotify();
+        javax.swing.SwingUtilities.invokeLater(this::updateDimensions);
+    }  
+}   
