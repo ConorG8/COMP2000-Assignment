@@ -84,6 +84,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
     private void createSeasonsCheckBox() {
         seasonsCheckBox = new JCheckBox("Enable Seasons", true);
+        seasonsCheckBox.setForeground(Color.white);
 
         seasonsCheckBox.addActionListener(e -> {
             seasonManager.setEnabled(seasonsCheckBox.isSelected());
