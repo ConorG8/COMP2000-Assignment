@@ -16,7 +16,7 @@ public class Cell {
     private CellState state;
     private Color color; // Default color for the cell
     public boolean isMutated = false; // Flag to indicate if the cell is mutated
-    public int resistance = 0; // Resistance level for the cell
+    public Resistance resistance = new Resistance(); // Resistance level for the cell
     public int infectionsCaused = 0;
     public boolean hasBeenInfected = false;
     public boolean infectedThisWindow = false;
@@ -85,7 +85,20 @@ public class Cell {
         CellState oppOriginState = opponent.getState();
         CellState oppNewState = opponent.state.reactWith(thisOriginState);
         CellState thisNewState = this.state.reactWith(oppOriginState);
-
+    // === Resistance check ===
+    if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
+        if (this.resistance.canResistAntivirus()) {
+            thisNewState = InfectedState.INSTANCE;
+            this.resistance.increaseLevel();
+        }
+    }
+    if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
+        if (opponent.resistance.canResistAntivirus()) {
+            oppNewState = InfectedState.INSTANCE;
+            opponent.resistance.increaseLevel();
+        }
+    }
+    // === End resistance check ===
         if (oppOriginState == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
             infectionsCaused ++;
             opponent.hasBeenInfected = true;
@@ -101,6 +114,7 @@ public class Cell {
         if (collisionEnabled) {
             bounceOff(opponent);
         }
+        
     }
 
     public void bounceOff(Cell opponent) { // Bounce off logic
