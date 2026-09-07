@@ -7,11 +7,11 @@ import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 
 public class Settings {
-    public static int CELL_SIZE = 20;
+    public static int CELL_SIZE = 35;
     public static double CELL_SPEED = 1.0;
-    public static int CELL_COUNT = 100;
-    public static int INFECTED_COUNT = 1;
-    public static int ANTIVIRUS_COUNT = 1;
+    public static int CELL_COUNT = 50;
+    public static int INFECTED_COUNT = 3;
+    public static int ANTIVIRUS_COUNT = 3;
     public static boolean hasCollision = true;
 
     public JPanel settingsPanel() {

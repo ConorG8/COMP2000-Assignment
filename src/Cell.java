@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 
 // Cell Class
 public class Cell {
@@ -59,26 +61,78 @@ public class Cell {
     }
 
     public void draw(Graphics g) { // Drawing loop for the cell
-        tick++;
-        int currentSize = getSize(); // For size changes
+    tick++;
+    int currentSize = getSize(); // For size changes
 
-        if(state.getType().equals("INFECTED")) { // "Pulsate" if the cell is infected
-            currentSize = (int) (getSize() + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
-        }
-
-        g.setColor(state.getCellColor());
-        
-        int offset = (currentSize - size) / 2;
-        g.fillOval((int) x - offset, (int) y - offset, currentSize, currentSize);
-
-        if(isMutated) { // Draw a border if the cell is mutated
-            g.setColor(Color.YELLOW);
-        }
-        else {
-            g.setColor(Color.BLACK);
-        }
-        g.drawOval((int) x-offset, (int) y-offset, currentSize, currentSize);
+    if(state.getType().equals("INFECTED")) { // "Pulsate" if the cell is infected
+        currentSize = (int) (getSize() + Math.sin(tick * 0.1) * 5); // Sin wave for the pulsing
     }
+
+    int offset = (currentSize - size) / 2;
+    int drawX = (int) x - offset;
+    int drawY = (int) y - offset;
+
+    int centerX = drawX + (currentSize / 2);
+    int centerY = drawY + (currentSize / 2);
+
+    // get glow color to determine glow color based on the type
+    Color glowColor = null;
+    if (state.getType().equals("INFECTED")) {
+        glowColor = Color.RED;
+    } else if (state.getType().equals("ANTIVIRUS")) {
+        glowColor = Color.BLUE;
+    } else {
+        glowColor = Color.GRAY;
+    }
+
+    // 2. Draw the glowing border underneath if a match was found
+    
+    Graphics2D g2d = (Graphics2D) g.create(); // Create a copy to protect graphics state
+    
+    // outer layer
+    g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 40)); 
+    g2d.fillOval(drawX - 8, drawY - 8, currentSize + 16, currentSize + 16);
+    
+    // middle layer
+    g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 100)); 
+    g2d.fillOval(drawX - 4, drawY - 4, currentSize + 8, currentSize + 8);
+    
+    // innner layer
+    g2d.setColor(glowColor);
+    g2d.drawOval(drawX, drawY, currentSize, currentSize);
+    
+    g2d.dispose(); // Clean up the copy
+
+
+    // Add spikes to INFECTED cell
+    if (state.getType().equals("INFECTED")) {
+        Graphics2D g2dSpikes = (Graphics2D) g.create();
+
+
+        g2dSpikes.setColor(state.getCellColor()); // Match the main cell color
+        
+        g2dSpikes.translate(centerX, centerY);
+        
+        int spikeCount = 10; // Total number of spikes around the cell
+        int spikeLength = currentSize + 20; // How far the spikes stick out past the cell
+        int spikeThickness = currentSize / 5; // Thickness of the spikes
+        int cornerArc = 15; // How rounded the spike corners are
+
+        for (int i = 0; i < spikeCount; i++) {
+            // Draw a rounded rectangle in the center
+            g2dSpikes.fillRoundRect(-spikeLength / 2, -spikeThickness / 2, spikeLength, spikeThickness, cornerArc, cornerArc);
+            
+            // Rotate the canvas for the next spike (360 degrees divided by spike count)
+            g2dSpikes.rotate(Math.toRadians(360.0 / spikeCount));
+        }
+        
+        g2dSpikes.dispose();
+    }
+
+    g.setColor(state.getCellColor());
+    g.fillOval(drawX, drawY, currentSize, currentSize);
+}
+
 
     public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
         CellState thisOriginState = this.getState();
