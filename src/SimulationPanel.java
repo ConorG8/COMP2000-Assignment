@@ -43,7 +43,6 @@ public class SimulationPanel extends JPanel implements ActionListener {
         deadCellCount = 0;
         mutatedCellCount = 0;
         offset = 10;
-
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -152,6 +151,12 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public void createCells() {
+        try {
+            validate();
+        } catch (InvalidSettingsException e) {
+            Settings.INFECTED_COUNT = 3;
+            Settings.ANTIVIRUS_COUNT = 3;
+        }
     for (int i = 0; i < cellCount; i++) {
         double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
         double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
@@ -335,4 +340,14 @@ public class SimulationPanel extends JPanel implements ActionListener {
         super.addNotify();
         javax.swing.SwingUtilities.invokeLater(this::updateDimensions);
     }  
+
+    public class InvalidSettingsException extends RuntimeException {
+        public InvalidSettingsException(String message) { super(message); }
+    }
+
+    public void validate() {
+        if (Settings.INFECTED_COUNT + Settings.ANTIVIRUS_COUNT > Settings.CELL_COUNT) {
+            throw new InvalidSettingsException("Infected + antivirus exceeds total cell count");
+        }
+    }
 }   

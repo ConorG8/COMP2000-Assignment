@@ -107,5 +107,4 @@ public class Settings {
 
         return settingsPanel;
     }
-
 }
