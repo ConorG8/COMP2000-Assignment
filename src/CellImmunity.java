@@ -4,14 +4,8 @@
  */
 public class CellImmunity {
     private boolean immune = false;
-    private int immunityLevel;
-    private int immuneTime;
-
-
-    public int getImmunityLevel() {
-        return immunityLevel;
-    }
-
+    private int immuneTime = 3;
+    private float chanceOfImmunity = 0.7f;
 
     /**
      * Check if the cell survives colliding with infected cell
@@ -19,7 +13,7 @@ public class CellImmunity {
      */
     public boolean calculateIfImmune() {
 
-        return Math.random() < 0.7;
+        return Math.random() < chanceOfImmunity;
     }
 
     
