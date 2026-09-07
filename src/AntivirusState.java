@@ -13,7 +13,7 @@ public class AntivirusState implements CellState {
         if (opponent.getType().equals("NEUTRAL")) {
             return this;  // stay the same;
         } else if (opponent.getType().equals("INFECTED")) {
-            return NeutralState.INSTANCE; // "Use" the antivirus.
+            return NeutralState.INSTANCE;
         } else {
             return this;  // Anti on Anti. Nothing happens.
         }
