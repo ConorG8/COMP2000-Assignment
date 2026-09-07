@@ -33,10 +33,10 @@ public class Cell {
         this.id = id;
         this.state = initialState;
         this.color = initialState.getCellColor(); // Set color based on initial state
-        this.velX = ((Math.random() * 3)-1) * speed;
-        this.velY = ((Math.random() * 3)-1) * speed;
+        this.velX = ((Math.random() * 3) - 1) * speed;
+        this.velY = ((Math.random() * 3) - 1) * speed;
     }
-    
+
     public Cell(double startX, double startY, int id, CellState initialState, Color color, boolean isMutated) {
         this.x = startX;
         this.y = startY;
@@ -44,19 +44,31 @@ public class Cell {
         this.state = initialState;
         this.color = color;
         this.isMutated = isMutated;
-        this.velX = ((Math.random() * 3)-1) * speed;
-        this.velY = ((Math.random() * 3)-1) * speed;
-    }    
+        this.velX = ((Math.random() * 3) - 1) * speed;
+        this.velY = ((Math.random() * 3) - 1) * speed;
+    }
 
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public int getId() { return id; }
-    public CellState getState() { return state; }
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public CellState getState() {
+        return state;
+    }
+
     public int getSize() {
-    return (int) Math.round(size * sizeMultiplier);
-     }
+        return (int) Math.round(size * sizeMultiplier);
+    }
 
-    public void changeState(CellState newState){
+    public void changeState(CellState newState) {
         this.state = newState;
     }
 
@@ -139,27 +151,26 @@ public class Cell {
         CellState oppOriginState = opponent.getState();
         CellState oppNewState = opponent.state.reactWith(thisOriginState);
         CellState thisNewState = this.state.reactWith(oppOriginState);
-    // === Resistance check ===
-    if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
-        if (this.resistance.canResistAntivirus()) {
-            thisNewState = InfectedState.INSTANCE;
-            this.resistance.increaseLevel();
+        // === Resistance check ===
+        if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
+            if (this.resistance.canResistAntivirus()) {
+                thisNewState = InfectedState.INSTANCE;
+                this.resistance.increaseLevel();
+            }
         }
-    }
-    if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
-        if (opponent.resistance.canResistAntivirus()) {
-            oppNewState = InfectedState.INSTANCE;
-            opponent.resistance.increaseLevel();
+        if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
+            if (opponent.resistance.canResistAntivirus()) {
+                oppNewState = InfectedState.INSTANCE;
+                opponent.resistance.increaseLevel();
+            }
         }
-    }
-    // === End resistance check ===
+        // === End resistance check ===
         if (oppOriginState == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
-            infectionsCaused ++;
+            infectionsCaused++;
             opponent.hasBeenInfected = true;
             opponent.infectedThisWindow = true;
-        }
-        else if (thisOriginState == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
-            opponent.infectionsCaused ++;
+        } else if (thisOriginState == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
+            opponent.infectionsCaused++;
             hasBeenInfected = true;
             infectedThisWindow = true;
         }
@@ -168,7 +179,7 @@ public class Cell {
         if (collisionEnabled) {
             bounceOff(opponent);
         }
-        
+
     }
 
     public void bounceOff(Cell opponent) { // Bounce off logic
@@ -180,17 +191,17 @@ public class Cell {
 
         opponent.velX = tempVelX;
         opponent.velY = tempVelY;
-        
+
         // Separate cells to prevent sticking
         double dx = opponent.x - this.x;
         double dy = opponent.y - this.y;
         double distance = Math.hypot(dx, dy);
-        
+
         if (distance < size) {
             double overlap = size - distance;
             double separationX = (dx / distance) * (overlap / 2 + 1);
             double separationY = (dy / distance) * (overlap / 2 + 1);
-            
+
             this.x -= separationX;
             this.y -= separationY;
             opponent.x += separationX;
@@ -200,7 +211,7 @@ public class Cell {
 
     public void move(int panelMaxWidth, int panelMaxHeight, int panelMinWidth, int panelMinHeight) { // Move logic
         if (panelMaxWidth <= 0 || panelMaxHeight <= 0) {
-            return; 
+            return;
         }
         x += velX;
         y += velY;
@@ -222,38 +233,36 @@ public class Cell {
         }
     }
 
-   public boolean collidesWith(Cell other) { // Collision logic
+    public boolean collidesWith(Cell other) { // Collision logic
 
-    int radiusA = getSize() / 2;
-    int radiusB = other.getSize() / 2;
+        int radiusA = getSize() / 2;
+        int radiusB = other.getSize() / 2;
 
-    double centXA = x + radiusA;
-    double centYA = y + radiusA;
+        double centXA = x + radiusA;
+        double centYA = y + radiusA;
 
-    double centXB = other.x + radiusB;
-    double centYB = other.y + radiusB;
+        double centXB = other.x + radiusB;
+        double centYB = other.y + radiusB;
 
-    double distance = Math.hypot(
-        centXB - centXA,
-        centYB - centYA
-    );
+        double distance = Math.hypot(
+                centXB - centXA,
+                centYB - centYA);
 
-    return distance <= radiusA + radiusB;
-     }
+        return distance <= radiusA + radiusB;
+    }
 
     public void setSpeedMultiplier(double multiplier) {
 
-    double speedChange = multiplier / speedMultiplier;
+        double speedChange = multiplier / speedMultiplier;
 
-    velX *= speedChange;
-    velY *= speedChange;
+        velX *= speedChange;
+        velY *= speedChange;
 
-    speedMultiplier = multiplier;
-     }
+        speedMultiplier = multiplier;
+    }
 
+    public void setSizeMultiplier(double multiplier) {
 
-public void setSizeMultiplier(double multiplier) {
-
-    sizeMultiplier = multiplier;
+        sizeMultiplier = multiplier;
     }
 }
