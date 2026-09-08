@@ -18,7 +18,9 @@ public class Cell {
     private CellState state;
     private Color color; // Default color for the cell
     public boolean isMutated = false; // Flag to indicate if the cell is mutated
+    public CellImmunity immunity = null; // Immunity for neutral cells
     public Resistance resistance = new Resistance(); // Resistance level for the cell
+
     public int infectionsCaused = 0;
     public boolean hasBeenInfected = false;
     public boolean infectedThisWindow = false;
