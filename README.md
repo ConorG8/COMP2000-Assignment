@@ -10,7 +10,7 @@ https://docs.google.com/spreadsheets/d/12h55ryoM3mye0ntDo29wyEReM5MRKOBxwy7ihyzL
 
 ## System mechanics
 
-### The system conposed of 3 cell types repressented by different colors
+### The system composed of 3 cell types repressented by different colors
 
 - RED - Infected cell
 - GREEN - Neutral cell

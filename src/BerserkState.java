@@ -1,7 +1,18 @@
 public class BerserkState {
-    boolean isBerserk = false;
+    boolean isBerserk;
+    int enterBerserkChance;
+
+    public BerserkState() {
+        this.isBerserk = false;
+        this.enterBerserkChance = 1;
+    }
 
     public void EnterBerserk() {
-        isBerserk = true;
+        this.isBerserk = true;
+        //this.enterBerserkChance -= 1;
+    }
+
+    public boolean getIsBerserk() {
+        return this.isBerserk;
     }
 }

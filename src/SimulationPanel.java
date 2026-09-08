@@ -197,29 +197,31 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
     public void EnterBerserk() {
         int numOfInfected = countByType()[1];
-        int numOfAntivirus = countByType()[2];
+        //int numOfAntivirus = countByType()[2];
 
-        if (numOfInfected < 5 && numOfInfected > 0) {
+        if (numOfInfected < 3 && numOfInfected > 0) {
             System.out.println("Infected cell almost die");
             for (Cell c : cells) {
                 // for every infected cells
                 if (c.getState() == InfectedState.INSTANCE) {
                 // do something
+                    System.out.println("Cells have entered berserk");
+                    c.berserk.EnterBerserk();
                 }
             }
         }
 
-        if (numOfAntivirus < 5) {
-            System.out.println("Antivirus cell almost die");
-            for (Cell c : cells) {
-                // for every infected cells
-                if (c.getState() == AntivirusState.INSTANCE) {
-                    // do something
-                }
-            }
-        }
+        // if (numOfAntivirus < 5) {
+        //     System.out.println("Antivirus cell almost die");
+        //     for (Cell c : cells) {
+        //         // for every infected cells
+        //         if (c.getState() == AntivirusState.INSTANCE) {
+        //             // do something
+        //         }
+        //     }
+        // }
 
-        System.out.println("done");
+        
     }
 
     public void drawStats(Graphics g) {

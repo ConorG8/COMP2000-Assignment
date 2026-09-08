@@ -20,6 +20,7 @@ public class Cell {
     public boolean isMutated = false; // Flag to indicate if the cell is mutated
     public CellImmunity immunity = null; // Immunity for neutral cells
     public Resistance resistance = new Resistance(); // Resistance level for the cell
+    public BerserkState berserk = new BerserkState();
 
     public int infectionsCaused = 0;
     public boolean hasBeenInfected = false;
@@ -115,7 +116,7 @@ public class Cell {
     g2d.setColor(glowColor);
     g2d.drawOval(drawX, drawY, currentSize, currentSize);
     
-    g2d.dispose(); // Clean up the copy
+    
 
 
     // Add spikes to INFECTED cell
@@ -132,6 +133,13 @@ public class Cell {
         int spikeThickness = currentSize / 5; // Thickness of the spikes
         int cornerArc = 15; // How rounded the spike corners are
 
+        
+
+        if (this.berserk.getIsBerserk()) {
+            g2d.setColor(new Color(255, 200, 0, 200)); 
+            g2d.fillOval(drawX - 12, drawY - 12, currentSize + 24, currentSize + 24);
+        }
+
         for (int i = 0; i < spikeCount; i++) {
             // Draw a rounded rectangle in the center
             g2dSpikes.fillRoundRect(-spikeLength / 2, -spikeThickness / 2, spikeLength, spikeThickness, cornerArc, cornerArc);
@@ -139,6 +147,8 @@ public class Cell {
             // Rotate the canvas for the next spike (360 degrees divided by spike count)
             g2dSpikes.rotate(Math.toRadians(360.0 / spikeCount));
         }
+
+        g2d.dispose(); // Clean up the copy
         
         g2dSpikes.dispose();
     }
@@ -155,7 +165,11 @@ public class Cell {
         CellState thisNewState = this.state.reactWith(oppOriginState);
         // === Resistance check ===
         if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
-            if (this.resistance.canResistAntivirus()) {
+            if (this.berserk.isBerserk) {
+                thisNewState = InfectedState.INSTANCE;
+                oppNewState = InfectedState.INSTANCE;
+            }
+            else if (this.resistance.canResistAntivirus()) {
                 thisNewState = InfectedState.INSTANCE;
                 this.resistance.increaseLevel();
             }
@@ -167,17 +181,22 @@ public class Cell {
             }
         }
         // === End resistance check ===
+
+        // this cell is infected and opponent is neutral
         if (oppOriginState == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
             infectionsCaused++;
             opponent.hasBeenInfected = true;
             opponent.infectedThisWindow = true;
+
+        // opponent is infected and this cell is neutral    
         } else if (thisOriginState == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
             opponent.infectionsCaused++;
             hasBeenInfected = true;
             infectedThisWindow = true;
         }
-        changeState(thisNewState);
-        opponent.changeState(oppNewState);
+
+        changeState(thisNewState); // opponent is antivirus -> change this cell to antivirus
+        opponent.changeState(oppNewState); // This cell is antivirus -> change opponent to antivirus
         if (collisionEnabled) {
             bounceOff(opponent);
         }
@@ -268,5 +287,5 @@ public class Cell {
         sizeMultiplier = multiplier;
     }
 
-    
+
 }
