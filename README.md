@@ -7,3 +7,30 @@ Through this semester, we will be making a simulation. Our idea is to center it 
 https://docs.google.com/spreadsheets/d/12h55ryoM3mye0ntDo29wyEReM5MRKOBxwy7ihyzLNBk/edit?gid=0#gid=0
 
 ## Group Name: Due Tomorrow
+
+## System mechanics
+
+### The system conposed of 3 cell types repressented by different colors
+
+- RED - Infected cell
+- GREEN - Neutral cell
+- BLUE - Antivirus cell
+
+### The system also has dfferent seasons which has special effect to certain cell types
+
+- SUMMER - Infected cells are 1.2x faster for the season duration
+
+- AUTUMN - Antivirus cells are 1.2x larger for the season duration
+ 
+- WINTER - Every second each cell has a 3% chance to die
+
+- SPRING - Every second each neutral cell has a 10% chance to reproduce
+
+### User can interact with the system through settings panel
+Settings panel allow user to set specific interactions such as:
+- Cell size 
+- Cell speed 
+- Total cell count
+- Number of infected cell
+- Number of Antivirus cell
+- Toggle collision between cells (on/off)
