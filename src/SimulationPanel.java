@@ -195,6 +195,32 @@ public class SimulationPanel extends JPanel implements ActionListener {
         return new int[]{neutral, infected, antivirus};
     }
 
+    public void EnterBerserk() {
+        int numOfNeutral = countByType()[0];
+        int numOfInfected = countByType()[1];
+        int numOfAntivirus = countByType()[2];
+
+        if (numOfInfected < 5) {
+            for (Cell c : cells) {
+                // for every infected cells
+                if (c.getState() == InfectedState.INSTANCE) {
+                // do something
+                System.out.println("Infected cell almost die");
+                }
+            }
+        }
+
+        if (numOfAntivirus < 5) {
+            for (Cell c : cells) {
+                // for every infected cells
+                if (c.getState() == AntivirusState.INSTANCE) {
+                    // do something
+                    System.out.println("Antivirus cell almost die");
+                }
+            }
+        }
+    }
+
     public void drawStats(Graphics g) {
         int[] counts = countByType();
         int neutralCount = counts[0];
