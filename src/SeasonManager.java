@@ -29,7 +29,7 @@ public class SeasonManager {
 
         this.simulationPanel = simulationPanel;
         currentSeason = Season.values()[
-        random.nextInt(Season.values().length)
+            random.nextInt(Season.values().length)
         ];
 
         // Choose a random season length between 5 and 10 seconds.

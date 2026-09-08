@@ -52,7 +52,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
         seasonManager = new SeasonManager(this);
 
-    lastUpdateTime = System.currentTimeMillis();
+        lastUpdateTime = System.currentTimeMillis();
 
         timer = new Timer(16, this);
         timer.start();
