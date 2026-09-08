@@ -35,6 +35,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
     private int mutatedCellCount;
     private int simTick = 0;
     private float r0 = 0;
+    public BerserkState Berserk;
 
     public SimulationPanel() {
         this.setPreferredSize(new Dimension(1200, 1200));
@@ -56,6 +57,8 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
         timer = new Timer(16, this);
         timer.start();
+
+        Berserk = new BerserkState(); // Create a new Berserk state for Infected cell
     }
 
     private void createResetButton() {
@@ -77,6 +80,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
         r0 = 0;
         seasonManager.reset();
         lastUpdateTime = System.currentTimeMillis();
+        Berserk = new BerserkState(); // create new berserk state after every reset
         updateDimensions();
         repaint();
     }
@@ -115,8 +119,8 @@ public class SimulationPanel extends JPanel implements ActionListener {
             settingsPanel.repaint();
             settingsCreated = true;
         }
-        
-        //Create Seasonal Checkbox once dimensions are available
+
+        // Create Seasonal Checkbox once dimensions are available
         if (seasonsCheckBox == null && simScreenX > 0 && simScreenY > 0) {
             createSeasonsCheckBox();
         }
@@ -157,19 +161,19 @@ public class SimulationPanel extends JPanel implements ActionListener {
             Settings.INFECTED_COUNT = 3;
             Settings.ANTIVIRUS_COUNT = 3;
         }
-    for (int i = 0; i < cellCount; i++) {
-        double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
-        double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
+        for (int i = 0; i < cellCount; i++) {
+            double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
+            double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
 
-        if (i < Settings.INFECTED_COUNT) {
-            cells.add(new Cell(randomX, randomY, i, InfectedState.INSTANCE));
-        } else if (i < Settings.ANTIVIRUS_COUNT + Settings.INFECTED_COUNT) {
-            cells.add(new Cell(randomX, randomY, i, AntivirusState.INSTANCE));
-        } else {
-            cells.add(new Cell(randomX, randomY, i, NeutralState.INSTANCE));
+            if (i < Settings.INFECTED_COUNT) {
+                cells.add(new Cell(randomX, randomY, i, InfectedState.INSTANCE));
+            } else if (i < Settings.ANTIVIRUS_COUNT + Settings.INFECTED_COUNT) {
+                cells.add(new Cell(randomX, randomY, i, AntivirusState.INSTANCE));
+            } else {
+                cells.add(new Cell(randomX, randomY, i, NeutralState.INSTANCE));
+            }
         }
     }
-}
 
     public void drawSimBorder(Graphics g) {
         // Sim screen borders
@@ -188,40 +192,43 @@ public class SimulationPanel extends JPanel implements ActionListener {
     public int[] countByType() {
         int neutral = 0, infected = 0, antivirus = 0;
         for (Cell c : cells) {
-            if (c.getState() == NeutralState.INSTANCE) neutral++;
-            if (c.getState() == InfectedState.INSTANCE) infected++;
-            if (c.getState() == AntivirusState.INSTANCE) antivirus++;
+            if (c.getState() == NeutralState.INSTANCE)
+                neutral++;
+            if (c.getState() == InfectedState.INSTANCE)
+                infected++;
+            if (c.getState() == AntivirusState.INSTANCE)
+                antivirus++;
         }
-        return new int[]{neutral, infected, antivirus};
+        return new int[] { neutral, infected, antivirus };
     }
 
     public void EnterBerserk() {
-        int numOfInfected = countByType()[1];
-        //int numOfAntivirus = countByType()[2];
 
-        if (numOfInfected < 3 && numOfInfected > 0) {
-            System.out.println("Infected cell almost die");
+        int numOfInfected = countByType()[1];
+
+        if (numOfInfected <= 1 && Berserk.enterBerserkChance > 0 && !Berserk.isBerserk()) {
+
+            // Enter berserk mode
+            Berserk.EnterBerserk();
+            // Make infected cells berserk
             for (Cell c : cells) {
-                // for every infected cells
                 if (c.getState() == InfectedState.INSTANCE) {
-                // do something
-                    System.out.println("Cells have entered berserk");
-                    c.berserk.EnterBerserk();
+                    c.isBerserk = true;
                 }
             }
+
+        } 
+        if (!Berserk.isBerserk()) {
+
+            for (Cell c : cells) {
+                if (c.isBerserk) {
+                    c.isBerserk = false;
+                }
+            }
+
+            // Turn Berserk state off
         }
-
-        // if (numOfAntivirus < 5) {
-        //     System.out.println("Antivirus cell almost die");
-        //     for (Cell c : cells) {
-        //         // for every infected cells
-        //         if (c.getState() == AntivirusState.INSTANCE) {
-        //             // do something
-        //         }
-        //     }
-        // }
-
-        
+        System.out.println(Berserk.enterBerserkChance);
     }
 
     public void drawStats(Graphics g) {
@@ -280,7 +287,6 @@ public class SimulationPanel extends JPanel implements ActionListener {
             }
         }
 
-
         // Update the season system.
         seasonManager.update(cells, deltaTime);
 
@@ -295,8 +301,6 @@ public class SimulationPanel extends JPanel implements ActionListener {
                 toAdd.add(new Cell(c.getX(), c.getY(), cells.size(), c.getState(), Color.ORANGE, true));
             }
         }
-
-        
 
         cells.removeAll(toRemove);
         deadCellCount += toRemove.size();
@@ -316,6 +320,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
                 c.infectedThisWindow = false;
             }
         }
+
         EnterBerserk();
 
         // Draw next frame.
@@ -347,35 +352,35 @@ public class SimulationPanel extends JPanel implements ActionListener {
         return totalInfectionsCaused / r0InfectedCount;
     }
 
-    public List<SimulationStats> getStatsHistory(){
+    public List<SimulationStats> getStatsHistory() {
         return statsHistory;
     }
 
-         public void setSimulationBackground(Color background) {
-            simulationBackground = background;
-            repaint();
+    public void setSimulationBackground(Color background) {
+        simulationBackground = background;
+        repaint();
     }
-
 
     public void incrementDeadCellCount() {
 
         deadCellCount++;
-     }
-
+    }
 
     public void incrementMutatedCellCount() {
 
         mutatedCellCount++;
-     }
+    }
 
-     @Override
+    @Override
     public void addNotify() {
         super.addNotify();
         javax.swing.SwingUtilities.invokeLater(this::updateDimensions);
-    }  
+    }
 
     public class InvalidSettingsException extends RuntimeException {
-        public InvalidSettingsException(String message) { super(message); }
+        public InvalidSettingsException(String message) {
+            super(message);
+        }
     }
 
     public void validate() {
@@ -383,4 +388,4 @@ public class SimulationPanel extends JPanel implements ActionListener {
             throw new InvalidSettingsException("Infected + antivirus exceeds total cell count");
         }
     }
-}   
+}

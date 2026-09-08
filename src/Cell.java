@@ -20,7 +20,7 @@ public class Cell {
     public boolean isMutated = false; // Flag to indicate if the cell is mutated
     public CellImmunity immunity = null; // Immunity for neutral cells
     public Resistance resistance = new Resistance(); // Resistance level for the cell
-    public BerserkState berserk = new BerserkState();
+    public boolean isBerserk = false;
 
     public int infectionsCaused = 0;
     public boolean hasBeenInfected = false;
@@ -135,7 +135,7 @@ public class Cell {
 
         
 
-        if (this.berserk.getIsBerserk()) {
+        if (this.isBerserk) {
             g2d.setColor(new Color(255, 200, 0, 200)); 
             g2d.fillOval(drawX - 12, drawY - 12, currentSize + 24, currentSize + 24);
         }
@@ -165,7 +165,7 @@ public class Cell {
         CellState thisNewState = this.state.reactWith(oppOriginState);
         // === Resistance check ===
         if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
-            if (this.berserk.isBerserk) {
+            if (this.isBerserk) {
                 thisNewState = InfectedState.INSTANCE;
                 oppNewState = InfectedState.INSTANCE;
             }
@@ -175,6 +175,10 @@ public class Cell {
             }
         }
         if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
+            if (opponent.isBerserk) {
+                thisNewState = InfectedState.INSTANCE;
+                oppNewState = InfectedState.INSTANCE;
+            }
             if (opponent.resistance.canResistAntivirus()) {
                 oppNewState = InfectedState.INSTANCE;
                 opponent.resistance.increaseLevel();

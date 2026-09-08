@@ -34,3 +34,9 @@ Settings panel allow user to set specific interactions such as:
 - Number of infected cell
 - Number of Antivirus cell
 - Toggle collision between cells (on/off)
+
+## Special effect for each cell type
+- Infected Cell
+    - BERSERK - infected cells can enter berserk when low in number. When berserk every cells it collided with will turn to infected cell and berserk cell gains immunity
+- Antivirus Cell
+- Neutral Cell
