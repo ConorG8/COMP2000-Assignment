@@ -10,7 +10,7 @@ https://docs.google.com/spreadsheets/d/12h55ryoM3mye0ntDo29wyEReM5MRKOBxwy7ihyzL
 
 ## System mechanics
 
-### The system conposed of 3 cell types repressented by different colors
+### The system composed of 3 cell types repressented by different colors
 
 - RED - Infected cell
 - GREEN - Neutral cell
@@ -35,7 +35,10 @@ Settings panel allow user to set specific interactions such as:
 - Number of Antivirus cell
 - Toggle collision between cells (on/off)
 
-### Cell features
-
-- Infected cells can gain resistance to anti-viruses, increasing the chance of their survival
-- Neutral cells simulate adaptive immunity through the Cell Immunity feature. This grants a chance for a neutral cell to become immune to an infected cell temporarily. 
+## Special effect for each cell type
+- Infected Cell
+    - BERSERK - infected cells can enter berserk when low in number. When berserk every cells it collided with will turn to infected cell and berserk cell gains immunity
+    - RESISTANCE - Infected cells can gain resistance to anti-viruses, increasing the chance of their survival
+- Antivirus Cell
+- Neutral Cell
+    - IMMUNITY - Neutral cells simulate adaptive immunity through the Cell Immunity feature. This grants a chance for a neutral cell to become immune to an infected cell temporarily. 

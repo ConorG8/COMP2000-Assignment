@@ -19,6 +19,7 @@ public class Cell {
     public boolean isMutated = false; // Flag to indicate if the cell is mutated
     public CellImmunity immunity = new CellImmunity(); // Immunity for neutral cells
     public Resistance resistance = new Resistance(); // Resistance level for the cell
+    public boolean isBerserk = false;
 
     public int infectionsCaused = 0;
     public boolean hasBeenInfected = false;
@@ -112,53 +113,63 @@ public class Cell {
             }
         }
 
-        // 2. Draw the glowing border underneath if a match was found
+    // 2. Draw the glowing border underneath if a match was found
+    
+    Graphics2D g2d = (Graphics2D) g.create(); // Create a copy to protect graphics state
+    
+    // outer layer
+    g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 40)); 
+    g2d.fillOval(drawX - 8, drawY - 8, currentSize + 16, currentSize + 16);
+    
+    // middle layer
+    g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 100)); 
+    g2d.fillOval(drawX - 4, drawY - 4, currentSize + 8, currentSize + 8);
+    
+    // innner layer
+    g2d.setColor(glowColor);
+    g2d.drawOval(drawX, drawY, currentSize, currentSize);
+    
+    g2d.dispose(); // Clean up the copy
 
-        Graphics2D g2d = (Graphics2D) g.create(); // Create a copy to protect graphics state
-
-        // outer layer
-        g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 40));
-        g2d.fillOval(drawX - 8, drawY - 8, currentSize + 16, currentSize + 16);
-
-        // middle layer
-        g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 100));
-        g2d.fillOval(drawX - 4, drawY - 4, currentSize + 8, currentSize + 8);
-
-        // innner layer
-        g2d.setColor(glowColor);
-        g2d.drawOval(drawX, drawY, currentSize, currentSize);
-
-        g2d.dispose(); // Clean up the copy
 
         // Add spikes to INFECTED cell
         if (state.getType().equals("INFECTED")) {
             Graphics2D g2dSpikes = (Graphics2D) g.create();
 
-            g2dSpikes.setColor(state.getCellColor()); // Match the main cell color
 
-            g2dSpikes.translate(centerX, centerY);
+        g2dSpikes.setColor(state.getCellColor()); // Match the main cell color
+        
+        g2dSpikes.translate(centerX, centerY);
+        
+        int spikeCount = 10; // Total number of spikes around the cell
+        int spikeLength = currentSize + 20; // How far the spikes stick out past the cell
+        int spikeThickness = currentSize / 5; // Thickness of the spikes
+        int cornerArc = 15; // How rounded the spike corners are
 
-            int spikeCount = 10; // Total number of spikes around the cell
-            int spikeLength = currentSize + 20; // How far the spikes stick out past the cell
-            int spikeThickness = currentSize / 5; // Thickness of the spikes
-            int cornerArc = 15; // How rounded the spike corners are
+        
 
-            for (int i = 0; i < spikeCount; i++) {
-                // Draw a rounded rectangle in the center
-                g2dSpikes.fillRoundRect(-spikeLength / 2, -spikeThickness / 2, spikeLength, spikeThickness, cornerArc,
-                        cornerArc);
+        if (this.isBerserk) {
+            g2d.setColor(new Color(255, 200, 0, 200)); 
+            g2d.fillOval(drawX - 12, drawY - 12, currentSize + 24, currentSize + 24);
+        }
 
-                // Rotate the canvas for the next spike (360 degrees divided by spike count)
-                g2dSpikes.rotate(Math.toRadians(360.0 / spikeCount));
-            }
-
-            g2dSpikes.dispose();
+        for (int i = 0; i < spikeCount; i++) {
+            // Draw a rounded rectangle in the center
+            g2dSpikes.fillRoundRect(-spikeLength / 2, -spikeThickness / 2, spikeLength, spikeThickness, cornerArc, cornerArc);
+            
+            // Rotate the canvas for the next spike (360 degrees divided by spike count)
+            g2dSpikes.rotate(Math.toRadians(360.0 / spikeCount));
         }
 
         
-        g.setColor(state.getCellColor());
-        g.fillOval(drawX, drawY, currentSize, currentSize);
+        
+        g2dSpikes.dispose();
     }
+
+    g.setColor(state.getCellColor());
+    g.fillOval(drawX, drawY, currentSize, currentSize);
+}
+
 
     public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
         CellState thisOriginState = this.getState();
@@ -168,12 +179,20 @@ public class Cell {
 
         // === Resistance check ===
         if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
-            if (this.resistance.canResistAntivirus()) {
+            if (this.isBerserk) {
+                thisNewState = InfectedState.INSTANCE;
+                oppNewState = InfectedState.INSTANCE;
+            }
+            else if (this.resistance.canResistAntivirus()) {
                 thisNewState = InfectedState.INSTANCE;
                 this.resistance.increaseLevel();
             }
         }
         if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
+            if (opponent.isBerserk) {
+                thisNewState = InfectedState.INSTANCE;
+                oppNewState = InfectedState.INSTANCE;
+            }
             if (opponent.resistance.canResistAntivirus()) {
                 oppNewState = InfectedState.INSTANCE;
                 opponent.resistance.increaseLevel();
@@ -345,5 +364,5 @@ public class Cell {
         sizeMultiplier = multiplier;
     }
 
-    
+
 }
