@@ -16,7 +16,7 @@ public class Cell {
     private int id;
     private CellState state; //
     private Color color; // Default color for the cell
-    public boolean isMutated = false; // Flag to indicate if the cell is mutated
+    public boolean isDuplicate = false; // Flag to indicate if the cell is duplicated
     public CellImmunity immunity = new CellImmunity(); // Immunity for neutral cells
     public Resistance resistance = new Resistance(); // Resistance level for the cell
     public boolean isBerserk = false;
@@ -44,13 +44,13 @@ public class Cell {
 
     }
 
-    public Cell(double startX, double startY, int id, CellState initialState, Color color, boolean isMutated) {
+    public Cell(double startX, double startY, int id, CellState initialState, Color color, boolean isDuplicate) {
         this.x = startX;
         this.y = startY;
         this.id = id;
         this.state = initialState;
         this.color = color;
-        this.isMutated = isMutated;
+        this.isDuplicate = isDuplicate;
         this.velX = ((Math.random() * 3) - 1) * speed;
         this.velY = ((Math.random() * 3) - 1) * speed;
 

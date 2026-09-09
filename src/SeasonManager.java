@@ -176,7 +176,7 @@ public class SeasonManager {
                         )
                     );
 
-                    simulationPanel.incrementMutatedCellCount();
+                    simulationPanel.incrementDuplicateCellCount();
                 }
             }
         }

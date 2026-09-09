@@ -32,7 +32,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
     private boolean settingsCreated = false;
     private int cellCount = Settings.CELL_COUNT;
     private int deadCellCount;
-    private int mutatedCellCount;
+    private int duplicateCellCount;
     private int simTick = 0;
     private float r0 = 0;
     public BerserkState Berserk;
@@ -42,7 +42,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
         this.setLayout(null);
         this.setBackground(Color.BLACK);
         deadCellCount = 0;
-        mutatedCellCount = 0;
+        duplicateCellCount = 0;
         offset = 10;
         this.addComponentListener(new ComponentAdapter() {
             @Override
@@ -75,7 +75,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
         statsHistory.clear();
         cellsCreated = false;
         deadCellCount = 0;
-        mutatedCellCount = 0;
+        duplicateCellCount = 0;
         simTick = 0;
         r0 = 0;
         seasonManager.reset();
@@ -258,7 +258,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
         g.setColor(Color.DARK_GRAY);
         g.drawString("Dead Cells: " + deadCellCount, simScreenX + offset, offset * 22);
         g.setColor(Color.yellow);
-        g.drawString("Mutated Cells: " + mutatedCellCount, simScreenX + offset, offset * 25);
+        g.drawString("Duplicate Cells: " + duplicateCellCount, simScreenX + offset, offset * 25);
         g.setColor(Color.magenta);
         g.drawString("R0 Value: " + r0, simScreenX + offset, offset * 28);
     }
@@ -307,7 +307,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
         cells.removeAll(toRemove);
         deadCellCount += toRemove.size();
         cells.addAll(toAdd);
-        mutatedCellCount += toAdd.size();
+        duplicateCellCount += toAdd.size();
 
         if (simTick % 125 == 0) {
             r0 = calculateR0();
@@ -315,7 +315,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
             int[] counts = countByType();
             statsHistory.add(new SimulationStats(
                     counts[0], counts[1], counts[2],
-                    deadCellCount, mutatedCellCount, r0, simTick));
+                    deadCellCount, duplicateCellCount, r0, simTick));
 
             for (Cell c : cells) {
                 c.infectionsCaused = 0;
@@ -368,9 +368,9 @@ public class SimulationPanel extends JPanel implements ActionListener {
         deadCellCount++;
     }
 
-    public void incrementMutatedCellCount() {
+    public void incrementDuplicateCellCount() {
 
-        mutatedCellCount++;
+        duplicateCellCount++;
     }
 
     @Override
