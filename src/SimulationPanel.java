@@ -207,16 +207,19 @@ public class SimulationPanel extends JPanel implements ActionListener {
         int numOfInfected = countByType()[1];
 
         if (numOfInfected <= 1 && Berserk.enterBerserkChance > 0 && !Berserk.isBerserk()) {
-
-            // Enter berserk mode
-            Berserk.EnterBerserk();
+            try {
+                Berserk.EnterBerserk(); // Enter berserk mode
+            } catch (Exception e) {
+                System.out.println("Failed to enter Berserk");
+            }finally {
+            
             // Make infected cells berserk
             for (Cell c : cells) {
                 if (c.getState() == InfectedState.INSTANCE) {
                     c.isBerserk = true;
                 }
             }
-
+            }
         } 
         else if (!Berserk.isBerserk()) {
 

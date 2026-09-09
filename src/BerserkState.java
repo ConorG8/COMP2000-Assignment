@@ -10,7 +10,15 @@ public class BerserkState {
         this.enterBerserkChance = 5;
     }
 
-    public void EnterBerserk() {
+    public void EnterBerserk() throws IllegalBerserkException{
+
+        if (this.enterBerserkChance <= 0) {
+            throw new IllegalBerserkException("No berserk uses remaining"); // prevent calling  enterBerserk when no Berserk chances left
+        }
+        if (this.isBerserk) {
+            throw new IllegalBerserkException("No berserk uses remaining"); // prevent calling enterBerserk when infected cells are already in berserk state
+        }
+
         this.isBerserk = true;
         this.enterBerserkChance -= 1;
         this.berserkStartTime = System.currentTimeMillis();
@@ -25,5 +33,11 @@ public class BerserkState {
             ExitBerserk(); 
         }
         return isBerserk;
+    }
+}
+
+class IllegalBerserkException extends Exception {
+    public IllegalBerserkException(String message) {
+        super(message);
     }
 }
