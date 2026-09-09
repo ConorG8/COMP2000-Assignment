@@ -113,63 +113,66 @@ public class Cell {
             }
         }
 
-    // 2. Draw the glowing border underneath if a match was found
-    
-    Graphics2D g2d = (Graphics2D) g.create(); // Create a copy to protect graphics state
-    
-    // outer layer
-    g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 40)); 
-    g2d.fillOval(drawX - 8, drawY - 8, currentSize + 16, currentSize + 16);
-    
-    // middle layer
-    g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 100)); 
-    g2d.fillOval(drawX - 4, drawY - 4, currentSize + 8, currentSize + 8);
-    
-    // innner layer
-    g2d.setColor(glowColor);
-    g2d.drawOval(drawX, drawY, currentSize, currentSize);
-    
-    g2d.dispose(); // Clean up the copy
+        // 2. Draw the glowing border underneath if a match was found
 
+        Graphics2D g2d = (Graphics2D) g.create(); // Create a copy to protect graphics state
+
+        // outer layer
+        g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 40));
+        g2d.fillOval(drawX - 8, drawY - 8, currentSize + 16, currentSize + 16);
+
+        // middle layer
+        g2d.setColor(new Color(glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(), 100));
+        g2d.fillOval(drawX - 4, drawY - 4, currentSize + 8, currentSize + 8);
+
+        // innner layer
+        g2d.setColor(glowColor);
+        g2d.drawOval(drawX, drawY, currentSize, currentSize);
 
         // Add spikes to INFECTED cell
         if (state.getType().equals("INFECTED")) {
             Graphics2D g2dSpikes = (Graphics2D) g.create();
 
+            g2dSpikes.setColor(state.getCellColor()); // Match the main cell color
 
-        g2dSpikes.setColor(state.getCellColor()); // Match the main cell color
-        
-        g2dSpikes.translate(centerX, centerY);
-        
-        int spikeCount = 10; // Total number of spikes around the cell
-        int spikeLength = currentSize + 20; // How far the spikes stick out past the cell
-        int spikeThickness = currentSize / 5; // Thickness of the spikes
-        int cornerArc = 15; // How rounded the spike corners are
+            g2dSpikes.translate(centerX, centerY);
 
-        
+            int spikeCount = 10; // Total number of spikes around the cell
+            int spikeLength = currentSize + 20; // How far the spikes stick out past the cell
+            int spikeThickness = currentSize / 5; // Thickness of the spikes
+            int cornerArc = 15; // How rounded the spike corners are
 
-        if (this.isBerserk) {
-            g2d.setColor(new Color(255, 200, 0, 200)); 
-            g2d.fillOval(drawX - 12, drawY - 12, currentSize + 24, currentSize + 24);
+            if (this.isBerserk) {
+                // ------- Drawing Aura-----------
+                int auraDiameter = (int) (currentSize + Math.sin(tick * 0.1) * 30);
+                int auraX = centerX - (auraDiameter / 2);
+                int auraY = centerY - (auraDiameter / 2);
+
+                g2d.setColor(new Color(255, 200, 0, 180));
+                g2d.fillOval(auraX, auraY, auraDiameter, auraDiameter);
+            }
+
+            for (int i = 0; i < spikeCount; i++) {
+                // ---------------- Add spike for Infected cell-----------------
+                // Draw a rectangle in the center
+                g2dSpikes.fillRoundRect(-spikeLength / 2, -spikeThickness / 2, spikeLength, spikeThickness, cornerArc,
+                        cornerArc);
+
+                // Rotate the canvas for the next spike
+                g2dSpikes.rotate(Math.toRadians(360.0 / spikeCount));
+                
+            }
+
+            g2d.dispose();
+            g2dSpikes.dispose();
+            // ------------------end add spike------------------------------
         }
 
-        for (int i = 0; i < spikeCount; i++) {
-            // Draw a rounded rectangle in the center
-            g2dSpikes.fillRoundRect(-spikeLength / 2, -spikeThickness / 2, spikeLength, spikeThickness, cornerArc, cornerArc);
-            
-            // Rotate the canvas for the next spike (360 degrees divided by spike count)
-            g2dSpikes.rotate(Math.toRadians(360.0 / spikeCount));
-        }
-
-        
-        
-        g2dSpikes.dispose();
+        // ---------------------------- Draw cell body------------------------
+        g.setColor(state.getCellColor());
+        g.fillOval(drawX, drawY, currentSize, currentSize);
+        // ---------------------------- end Draw cell body------------------------
     }
-
-    g.setColor(state.getCellColor());
-    g.fillOval(drawX, drawY, currentSize, currentSize);
-}
-
 
     public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
         CellState thisOriginState = this.getState();
@@ -182,8 +185,7 @@ public class Cell {
             if (this.isBerserk) {
                 thisNewState = InfectedState.INSTANCE;
                 oppNewState = InfectedState.INSTANCE;
-            }
-            else if (this.resistance.canResistAntivirus()) {
+            } else if (this.resistance.canResistAntivirus()) {
                 thisNewState = InfectedState.INSTANCE;
                 this.resistance.increaseLevel();
             }
@@ -217,7 +219,8 @@ public class Cell {
                 opponent.immunity.setImmunity(false);
             }
         }
-        
+
+        // ---------------------------------check cell immunity----------------------------------
         // Check if cell is immune and change it back to neutral if so
         if (this.state == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
             if (this.immunity.getImmunityAllowed()) {
@@ -258,7 +261,7 @@ public class Cell {
                 }
             }
         }
-        // End cell immunity 
+        // ---------------------------------End cell immunity----------------------------------
 
         if (oppOriginState == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
             infectionsCaused++;
@@ -363,6 +366,5 @@ public class Cell {
 
         sizeMultiplier = multiplier;
     }
-
 
 }
