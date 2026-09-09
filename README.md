@@ -34,3 +34,8 @@ Settings panel allow user to set specific interactions such as:
 - Number of infected cell
 - Number of Antivirus cell
 - Toggle collision between cells (on/off)
+
+### Cell features
+
+- Infected cells can gain resistance to anti-viruses, increasing the chance of survival
+- Neutral cells simulate adaptive immunity through the Cell Immunity feature. This grants a chance for a neutral cell to become immune to an infected cell temporarily. 
