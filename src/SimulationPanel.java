@@ -218,7 +218,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
             }
 
         } 
-        if (!Berserk.isBerserk()) {
+        else if (!Berserk.isBerserk()) {
 
             for (Cell c : cells) {
                 if (c.isBerserk) {
@@ -228,7 +228,6 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
             // Turn Berserk state off
         }
-        System.out.println(Berserk.enterBerserkChance);
     }
 
     public void drawStats(Graphics g) {

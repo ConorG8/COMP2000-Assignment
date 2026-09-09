@@ -22,9 +22,7 @@ public class BerserkState {
 
     public boolean isBerserk() {
         if (isBerserk && System.currentTimeMillis() - berserkStartTime >= berserkDuration) {
-            isBerserk = false;
-            System.out.println("A");
-            
+            ExitBerserk(); 
         }
         return isBerserk;
     }

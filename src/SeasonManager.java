@@ -191,8 +191,9 @@ public class SeasonManager {
         for (Cell cell : cells) {
 
             // Reset modifiers first.
-            cell.setSpeedMultiplier(1.0);
-            cell.setSizeMultiplier(1.0);
+                cell.setSpeedMultiplier(1.0);
+                cell.setSizeMultiplier(1.0);
+            
 
 
             if (currentSeason == Season.SUMMER) {
