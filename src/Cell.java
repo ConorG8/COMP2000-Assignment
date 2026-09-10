@@ -18,7 +18,7 @@ public class Cell {
     private Color color; // Default color for the cell
     public boolean isDuplicate = false; // Flag to indicate if the cell is duplicated
     public CellImmunity immunity = new CellImmunity(); // Immunity for neutral cells
-    public Resistance resistance = new Resistance(); // Resistance level for the cell
+    public Resistance resistance = new Resistance(); // Resistance level for virus cells
     public boolean isBerserk = false;
 
     public int infectionsCaused = 0;
@@ -175,6 +175,10 @@ public class Cell {
     }
 
     public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
+        if (opponent == null) {
+            throw new InvalidArgumentException("Passed opponent argument is null");
+        }
+
         CellState thisOriginState = this.getState();
         CellState oppOriginState = opponent.getState();
         CellState oppNewState = opponent.state.reactWith(thisOriginState);
@@ -189,6 +193,7 @@ public class Cell {
                 thisNewState = InfectedState.INSTANCE;
                 this.resistance.increaseLevel();
             }
+            this.immunity.incrementCuredCount(); // Increase cured counts
         }
         if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
             if (opponent.isBerserk) {
@@ -199,15 +204,12 @@ public class Cell {
                 oppNewState = InfectedState.INSTANCE;
                 opponent.resistance.increaseLevel();
             }
+            opponent.immunity.incrementCuredCount(); // Increase cured counts
         }
         // === End resistance check ===
 
         // == Start Cell Immunity ==
-        if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
-            // System.out.println("increase");
-            this.immunity.incrementCuredCount();
-        }
-
+        // If neutral cell converted to antivirus, remove immunity
         if (this.state == NeutralState.INSTANCE && thisNewState == AntivirusState.INSTANCE) {
             if (this.immunity.getImmunity() == true) {
                 this.immunity.setImmunity(false);
@@ -220,7 +222,7 @@ public class Cell {
             }
         }
 
-        // ---------------------------------check cell immunity----------------------------------
+        // ---------------------------------Check cell immunity----------------------------------
         // Check if cell is immune and change it back to neutral if so
         if (this.state == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
             if (this.immunity.getImmunityAllowed()) {
@@ -235,7 +237,7 @@ public class Cell {
                     thisNewState = NeutralState.INSTANCE;
                     // System.out.println("Immune"); // For debugging
                 } else {
-                    // System.out.println("not immune");
+                    // System.out.println("Not immune");
                     this.immunity.setImmunity(false);
                 }
             }
@@ -256,7 +258,7 @@ public class Cell {
                     oppNewState = NeutralState.INSTANCE;
                     // System.out.println("Immune");
                 } else {
-                    // System.out.println("not immune");
+                    // System.out.println("Not immune");
                     opponent.immunity.setImmunity(false);
                 }
             }
@@ -335,6 +337,9 @@ public class Cell {
     }
 
     public boolean collidesWith(Cell other) { // Collision logic
+        if (other == null) {
+            throw new InvalidArgumentException("Passed other argument is null");
+        }
 
         int radiusA = getSize() / 2;
         int radiusB = other.getSize() / 2;
@@ -367,4 +372,10 @@ public class Cell {
         sizeMultiplier = multiplier;
     }
 
+}
+
+class InvalidArgumentException extends RuntimeException {
+    public InvalidArgumentException(String message) {
+        super(message);
+    }
 }
