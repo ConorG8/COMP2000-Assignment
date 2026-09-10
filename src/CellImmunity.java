@@ -1,7 +1,3 @@
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Cell immunity
  * after being cured, the cell gains a chance to gain immunity from an infected cell
@@ -9,23 +5,10 @@ import java.util.concurrent.TimeUnit;
 public class CellImmunity {
     private boolean isImmune = false;
     private int curedCount = 0;
-    private int maxImmunityCount = 3; // 
+    private int maxImmunityCount = 2; // 
     private int hitCounts = 0;
-
-
-    //private long immuneTime = 3000;
-    private float chanceOfImmunity = 0.75f;
+    private float chanceOfImmunity = 0.70f;
     private boolean canHaveImmunity = false;
-    
-    /*
-
-    make timer
-
-    set code to run every 3 seconds?
-
-    check if immune if immune then give immunity for 2-3 collisions
-    
-    */
 
     public boolean getImmunityAllowed() {
          return canHaveImmunity;
@@ -51,6 +34,9 @@ public class CellImmunity {
         this.isImmune = immunity;
     }
 
+    /**
+     * Check if the cell is immune
+     */
     public void checkIfImmune() {
         if (this.hitCounts < this.maxImmunityCount) {
             this.isImmune = true;
@@ -63,7 +49,7 @@ public class CellImmunity {
     }
 
     /**
-     * Check if the cell survives colliding with infected cell
+     * Calculate cell immunity
      * @return
      */
     public boolean calculateIfImmune() {
@@ -73,7 +59,12 @@ public class CellImmunity {
             return false;
         }
     }
+}
 
-    
 
+class CellImmunityException extends Exception {
+    public CellImmunityException(String message) {
+        // Pass message to parent class
+        super(message);
+    }
 }
