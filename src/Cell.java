@@ -37,7 +37,7 @@ public class Cell {
         this.state = initialState;
         this.color = initialState.getCellColor(); // Set color based on initial state
         this.velX = ((Math.random() * 3) - 1) * speed;
-        this.velY = ((Math.random() * 3) - 1) * speed;
+        this.velY = ((Math.random() * 3) - 1) * speed;;
 
         if (state.getType().equals("NEUTRAL")) {
             this.immunity.setIfImmunityAllowed(true);
@@ -394,7 +394,20 @@ public class Cell {
         double speedChange = multiplier / speedMultiplier;
 
         velX *= speedChange;
+        //System.out.println("velX:"+ velX);
+
         velY *= speedChange;
+
+        // Speed reduction to address the effect of a speed bug that increases the cell's speed abnormally high
+        if (Math.abs(velX) > 2*speed*1.4) {
+            //System.out.println("BAD velX after multiplier: " + velX);
+            velX = Math.clamp(velX, -2*speed*1.4, 2*speed*1.4);
+            
+        }
+        if (Math.abs(velY) > 2*speed*1.4) {
+            //System.out.println("BAD velY after multiplier: " + velY);
+            velY = Math.clamp(velY, -2*speed*1.4, 2*speed*1.4);
+        }
 
         speedMultiplier = multiplier;
     }
