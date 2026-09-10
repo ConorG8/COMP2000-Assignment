@@ -35,10 +35,10 @@ public class Resistance {
      * @return true if survives (stays infected), false if cured
      */
     public boolean canResistAntivirus() {
-        if (level == 0) return Math.random() < 0.01;  // 1% chance
+        if (level == 0) return Math.random() < 0.10;  // 10% chance
         if (level == 1) return Math.random() < 0.20;  // 20% chance
-        if (level == 2) return Math.random() < 0.40;  // 40% chance
-        if (level > 2) return Math.random() < 0.70;  // 70% chance
+        if (level == 2) return Math.random() < 0.25;  // 25% chance
+        if (level > 2) return Math.random() < 0.30;  // 30% chance
         return true;                        
     }
 }

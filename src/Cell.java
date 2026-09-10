@@ -1,7 +1,8 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
+import java.awt.BasicStroke;
+import java.awt.Font;
 // Cell Class
 public class Cell {
     private double x;
@@ -166,12 +167,43 @@ public class Cell {
             g2d.dispose();
             g2dSpikes.dispose();
             // ------------------end add spike------------------------------
-        }
-
+        } 
         // ---------------------------- Draw cell body------------------------
         g.setColor(state.getCellColor());
         g.fillOval(drawX, drawY, currentSize, currentSize);
         // ---------------------------- end Draw cell body------------------------
+
+        // ------- Draw resistance level------------------
+        int resistLevel = resistance.getLevel();
+        if (resistLevel > 0 && state.getType().equals("INFECTED")) {
+
+            // Border color based on resistance level
+            Color borderColor;
+            if (resistLevel >= 3) {
+                borderColor = Color.MAGENTA;   // Level 3: fully immune
+            } else if (resistLevel == 2) {
+                borderColor = Color.ORANGE;    // Level 2: medium
+            } else {
+                borderColor = Color.WHITE;     // Level 1: low
+            }
+
+            // Draw thick colored border
+            Graphics2D g2dResist = (Graphics2D) g.create();
+            g2dResist.setColor(borderColor);
+            g2dResist.setStroke(new BasicStroke(3));
+            g2dResist.drawOval(drawX - 2, drawY - 2, currentSize + 4, currentSize + 4);
+            g2dResist.dispose();
+
+            // Draw resistance level number
+            Graphics2D g2dText = (Graphics2D) g.create();
+            g2dText.setColor(Color.WHITE);
+            g2dText.setFont(new Font("Arial", Font.BOLD, 14));
+            String lvlText = "R" + resistLevel;
+            int textWidth = g2dText.getFontMetrics().stringWidth(lvlText);
+            g2dText.drawString(lvlText, centerX - textWidth / 2, centerY + 5);
+            g2dText.dispose();
+        }
+        // --------------- end resistance level ---------------------
     }
 
     public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
