@@ -206,7 +206,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
 
         int numOfInfected = countByType()[1];
 
-        if (numOfInfected <= 1 && Berserk.enterBerserkChance > 0 && !Berserk.isBerserk()) {
+        if (numOfInfected <= 5 && Berserk.enterBerserkChance > 0 && !Berserk.isBerserk()) {
             try {
                 Berserk.EnterBerserk(); // Enter berserk mode
             } catch (Exception e) {
