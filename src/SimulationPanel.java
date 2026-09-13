@@ -203,6 +203,9 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public void EnterBerserk() {
+        if (!cellsCreated || cells.isEmpty()) { // Make sure there are cells before activating berserk
+            return;
+        }
 
         int numOfInfected = countByType()[1];
 
