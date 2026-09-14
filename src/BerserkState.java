@@ -1,9 +1,9 @@
 public class BerserkState {
-    boolean isBerserk; // Berserk status T / F
-    int enterBerserkChance; // Chances left to enter berserk
+    private boolean isBerserk; // Berserk status T / F
+    private int enterBerserkChance; // Chances left to enter berserk
 
-    long berserkStartTime; // start counting berserk state
-    int berserkDuration = 10000; // duration 5 secs
+    private long berserkStartTime; // start counting berserk state
+    private int berserkDuration = 10000; // duration 5 secs
 
     public BerserkState() {
         this.isBerserk = false; // Start no berserk
@@ -35,6 +35,10 @@ public class BerserkState {
      */
     public void ExitBerserk() {
         this.isBerserk = false;
+    }
+
+    public int getBerserkChanceLeft() {
+        return enterBerserkChance;
     }
 
     /**
