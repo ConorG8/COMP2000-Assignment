@@ -1,11 +1,11 @@
 /**
  * Cell immunity
- * after being cured, the cell gains a chance to gain immunity from an infected cell
+ * After being cured, the cell gains a chance to gain immunity from an infected cell
  */
 public class CellImmunity {
     private boolean isImmune = false;
     private int curedCount = 0;
-    private int maxImmunityCount = 2; // 
+    private int maxImmunityCount = 1; // 
     private int hitCounts = 0;
     private float chanceOfImmunity = 0.70f;
     private boolean canHaveImmunity = false;
@@ -38,7 +38,7 @@ public class CellImmunity {
      * Check if the cell is immune
      */
     public void checkIfImmune() {
-        if (this.hitCounts < this.maxImmunityCount) {
+        if (this.hitCounts <= this.maxImmunityCount) {
             this.isImmune = true;
             this.hitCounts++;
         } else {
@@ -58,13 +58,5 @@ public class CellImmunity {
         } else {
             return false;
         }
-    }
-}
-
-
-class CellImmunityException extends Exception {
-    public CellImmunityException(String message) {
-        // Pass message to parent class
-        super(message);
     }
 }

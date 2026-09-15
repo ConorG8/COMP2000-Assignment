@@ -207,114 +207,117 @@ public class Cell {
     }
 
     public void onCollision(Cell opponent) { // change the cell states depending on the type of reaction
-        if (opponent == null) {
-            throw new InvalidArgumentException("Passed opponent argument is null");
-        }
-
-        CellState thisOriginState = this.getState();
-        CellState oppOriginState = opponent.getState();
-        CellState oppNewState = opponent.state.reactWith(thisOriginState);
-        CellState thisNewState = this.state.reactWith(oppOriginState);
-
-        // === Resistance check ===
-        if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
-            if (this.isBerserk) {
-                thisNewState = InfectedState.INSTANCE;
-                oppNewState = InfectedState.INSTANCE;
-            } else if (this.resistance.canResistAntivirus()) {
-                thisNewState = InfectedState.INSTANCE;
-                this.resistance.increaseLevel();
+        try {
+            if (opponent == null) {
+                throw new InvalidArgumentException("Passed opponent argument is null");
             }
-            this.immunity.incrementCuredCount(); // Increase cured counts
-        }
-        if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
-            if (opponent.isBerserk) {
-                thisNewState = InfectedState.INSTANCE;
-                oppNewState = InfectedState.INSTANCE;
-            }
-            if (opponent.resistance.canResistAntivirus()) {
-                oppNewState = InfectedState.INSTANCE;
-                opponent.resistance.increaseLevel();
-            }
-            opponent.immunity.incrementCuredCount(); // Increase cured counts
-        }
-        // === End resistance check ===
 
-        // == Start Cell Immunity ==
-        // If neutral cell converted to antivirus, remove immunity
-        if (this.state == NeutralState.INSTANCE && thisNewState == AntivirusState.INSTANCE) {
-            if (this.immunity.getImmunity() == true) {
-                this.immunity.setImmunity(false);
+            CellState thisOriginState = this.getState();
+            CellState oppOriginState = opponent.getState();
+            CellState oppNewState = opponent.state.reactWith(thisOriginState);
+            CellState thisNewState = this.state.reactWith(oppOriginState);
+
+            // === Resistance check ===
+            if (this.state == InfectedState.INSTANCE && thisNewState == NeutralState.INSTANCE) {
+                if (this.isBerserk) {
+                    thisNewState = InfectedState.INSTANCE;
+                    oppNewState = InfectedState.INSTANCE;
+                } else if (this.resistance.canResistAntivirus()) {
+                    thisNewState = InfectedState.INSTANCE;
+                    this.resistance.increaseLevel();
+                }
+                this.immunity.incrementCuredCount(); // Increase cured counts
             }
-        }
-
-        if (opponent.state == NeutralState.INSTANCE && oppNewState == AntivirusState.INSTANCE) {
-            if (opponent.immunity.getImmunity() == true) {
-                opponent.immunity.setImmunity(false);
+            if (opponent.state == InfectedState.INSTANCE && oppNewState == NeutralState.INSTANCE) {
+                if (opponent.isBerserk) {
+                    thisNewState = InfectedState.INSTANCE;
+                    oppNewState = InfectedState.INSTANCE;
+                }
+                if (opponent.resistance.canResistAntivirus()) {
+                    oppNewState = InfectedState.INSTANCE;
+                    opponent.resistance.increaseLevel();
+                }
+                opponent.immunity.incrementCuredCount(); // Increase cured counts
             }
-        }
+            // === End resistance check ===
 
-        // ---------------------------------Check cell immunity----------------------------------
-        // Check if cell is immune and change it back to neutral if so
-        if (this.state == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
-            if (this.immunity.getImmunityAllowed()) {
-
-                boolean calculatedImmunity = this.immunity.calculateIfImmune();
-                if (this.immunity.getImmunity() == false && calculatedImmunity) {
-                    this.immunity.checkIfImmune();
-                    thisNewState = NeutralState.INSTANCE;
-                    // System.out.println("Immune");
-                } else if (opponent.immunity.getImmunity() == true) {
-                    this.immunity.checkIfImmune();
-                    thisNewState = NeutralState.INSTANCE;
-                    // System.out.println("Immune"); // For debugging
-                } else {
-                    // System.out.println("Not immune");
+            // == Start Cell Immunity ==
+            // If neutral cell converted to antivirus, remove immunity
+            if (this.state == NeutralState.INSTANCE && thisNewState == AntivirusState.INSTANCE) {
+                if (this.immunity.getImmunity() == true) {
                     this.immunity.setImmunity(false);
                 }
             }
-        }
 
-        // Check if cell is immune and change it back to neutral if so
-        if (opponent.state == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
-            if (opponent.immunity.getImmunityAllowed()) {
-                // System.out.println("opp Immunity: "+ (this.immunity.getImmunity() == false));
-                boolean calculatedImmunity = opponent.immunity.calculateIfImmune();
-                if (opponent.immunity.getImmunity() == false && calculatedImmunity) {
-                    opponent.immunity.checkIfImmune();
-                    oppNewState = NeutralState.INSTANCE;
-                    // System.out.println("Immune");
-
-                } else if (opponent.immunity.getImmunity() == true) {
-                    opponent.immunity.checkIfImmune();
-                    oppNewState = NeutralState.INSTANCE;
-                    // System.out.println("Immune");
-                } else {
-                    // System.out.println("Not immune");
+            if (opponent.state == NeutralState.INSTANCE && oppNewState == AntivirusState.INSTANCE) {
+                if (opponent.immunity.getImmunity() == true) {
                     opponent.immunity.setImmunity(false);
                 }
             }
+
+            // ---------------------------------Check cell immunity----------------------------------
+            // Check if cell is immune and change it back to neutral if so
+            if (this.state == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
+                if (this.immunity.getImmunityAllowed()) {
+
+                    boolean calculatedImmunity = this.immunity.calculateIfImmune();
+                    if (this.immunity.getImmunity() == false && calculatedImmunity) {
+                        this.immunity.checkIfImmune();
+                        thisNewState = NeutralState.INSTANCE;
+                        // System.out.println("Immune");
+                    } else if (opponent.immunity.getImmunity() == true) {
+                        this.immunity.checkIfImmune();
+                        thisNewState = NeutralState.INSTANCE;
+                        // System.out.println("Immune"); // For debugging
+                    } else {
+                        // System.out.println("Not immune");
+                        this.immunity.setImmunity(false);
+                    }
+                }
+            }
+
+            // Check if cell is immune and change it back to neutral if so
+            if (opponent.state == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
+                if (opponent.immunity.getImmunityAllowed()) {
+                    // System.out.println("opp Immunity: "+ (this.immunity.getImmunity() == false));
+                    boolean calculatedImmunity = opponent.immunity.calculateIfImmune();
+                    if (opponent.immunity.getImmunity() == false && calculatedImmunity) {
+                        opponent.immunity.checkIfImmune();
+                        oppNewState = NeutralState.INSTANCE;
+                        // System.out.println("Immune");
+
+                    } else if (opponent.immunity.getImmunity() == true) {
+                        opponent.immunity.checkIfImmune();
+                        oppNewState = NeutralState.INSTANCE;
+                        // System.out.println("Immune");
+                    } else {
+                        // System.out.println("Not immune");
+                        opponent.immunity.setImmunity(false);
+                    }
+                }
+            }
+            // ---------------------------------End cell immunity----------------------------------
+
+            if (oppOriginState == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
+                infectionsCaused++;
+                opponent.hasBeenInfected = true;
+                opponent.infectedThisWindow = true;
+
+            } else if (thisOriginState == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
+                opponent.infectionsCaused++;
+                hasBeenInfected = true;
+                infectedThisWindow = true;
+            }
+
+            // Cell state change
+            changeState(thisNewState);
+            opponent.changeState(oppNewState);
+            if (collisionEnabled) {
+                bounceOff(opponent);
+            }
+        } catch (RuntimeException e) {
+            System.err.println(e);
         }
-        // ---------------------------------End cell immunity----------------------------------
-
-        if (oppOriginState == NeutralState.INSTANCE && oppNewState == InfectedState.INSTANCE) {
-            infectionsCaused++;
-            opponent.hasBeenInfected = true;
-            opponent.infectedThisWindow = true;
-
-        } else if (thisOriginState == NeutralState.INSTANCE && thisNewState == InfectedState.INSTANCE) {
-            opponent.infectionsCaused++;
-            hasBeenInfected = true;
-            infectedThisWindow = true;
-        }
-
-        // Cell state change
-        changeState(thisNewState);
-        opponent.changeState(oppNewState);
-        if (collisionEnabled) {
-            bounceOff(opponent);
-        }
-
     }
 
     public void bounceOff(Cell opponent) { // Bounce off logic
