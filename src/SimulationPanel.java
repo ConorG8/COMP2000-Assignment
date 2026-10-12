@@ -190,16 +190,12 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public int[] countByType() {
-        int neutral = 0, infected = 0, antivirus = 0;
-        for (Cell c : cells) {
-            if (c.getState() == NeutralState.INSTANCE)
-                neutral++;
-            if (c.getState() == InfectedState.INSTANCE)
-                infected++;
-            if (c.getState() == AntivirusState.INSTANCE)
-                antivirus++;
-        }
-        return new int[] { neutral, infected, antivirus };
+
+        long neutralCount = cells.stream().filter(CellState -> CellState.getState() == NeutralState.INSTANCE).count();
+        long infectedCount = cells.stream().filter(CellState -> CellState.getState() == InfectedState.INSTANCE).count();
+        long antivirusCount = cells.stream().filter(CellState -> CellState.getState() == AntivirusState.INSTANCE).count();
+
+        return new int[] { (int) neutralCount, (int) infectedCount, (int) antivirusCount };
     }
 
     public void EnterBerserk() {
