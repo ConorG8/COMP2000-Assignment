@@ -8,6 +8,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -214,23 +216,22 @@ public class SimulationPanel extends JPanel implements ActionListener {
                 Berserk.EnterBerserk(); // Enter berserk mode
             } catch (Exception e) {
                 System.out.println("Failed to enter Berserk");
-            }finally {
+            } finally {
             
-            // Make infected cells berserk
-            for (Cell c : cells) {
-                if (c.getState() == InfectedState.INSTANCE) {
-                    c.isBerserk = true;
-                }
-            }
+                // Make infected cells berserk
+                cells.stream().filter(cell -> cell.getState() == InfectedState.INSTANCE).map(cell -> cell.isBerserk = true).toList();
+
+                /* for (Cell c : cells) {
+                    if (c.getState() == InfectedState.INSTANCE) {
+                        c.isBerserk = true;
+                    }
+                } */
+                
             }
         } 
         else if (!Berserk.isBerserk()) {
 
-            for (Cell c : cells) {
-                if (c.isBerserk) {
-                    c.isBerserk = false;
-                }
-            }
+            cells.stream().filter(cell -> cell.getState() == InfectedState.INSTANCE).map(cell -> cell.isBerserk = false).toList();
 
             // Turn Berserk state off
         }

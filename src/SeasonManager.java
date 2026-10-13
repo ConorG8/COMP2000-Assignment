@@ -156,37 +156,36 @@ public class SeasonManager {
 
         List<Cell> newCells = new ArrayList<>();
 
-        for (Cell cell : cells) {
+        cells.stream()
+            // Only neutral cells can reproduce. 10% chance for this cell to reproduce.
+            .filter(cell -> cell.getState().equals(NeutralState.INSTANCE) && random.nextDouble() < 0.10)
+            .forEach(cell -> {
+                double newX = cell.getX() + (random.nextDouble() * 10 - 5);
+                double newY = cell.getY() + (random.nextDouble() * 10 - 5);
 
-            // Only neutral cells can reproduce.
-            if (cell.getState().equals(NeutralState.INSTANCE)) {
+                newCells.add(
+                    new Cell(
+                        newX,
+                        newY,
+                        cells.size() + newCells.size(),
+                        NeutralState.INSTANCE
+                    )
+                );
 
-                // 10% chance for this cell to reproduce.
-                if (random.nextDouble() < 0.10) {
-
-                    double newX = cell.getX() + (random.nextDouble() * 10 - 5);
-                    double newY = cell.getY() + (random.nextDouble() * 10 - 5);
-
-                    newCells.add(
-                        new Cell(
-                            newX,
-                            newY,
-                            cells.size() + newCells.size(),
-                            NeutralState.INSTANCE
-                        )
-                    );
-
-                    simulationPanel.incrementDuplicateCellCount();
-                }
+                simulationPanel.incrementDuplicateCellCount();
             }
-        }
+        );
 
         // Add all new cells after the loop has finished.
         cells.addAll(newCells);
+
     }
 
 
     private void updateCellModifiers(List<Cell> cells) {
+
+
+        
 
         for (Cell cell : cells) {
 
@@ -194,7 +193,6 @@ public class SeasonManager {
             cell.setSpeedMultiplier(1.0);
             cell.setSizeMultiplier(1.0);
             
-
 
             if (currentSeason == Season.SUMMER) {
 
@@ -218,10 +216,10 @@ public class SeasonManager {
     }
     
     private void resetCellModifiers(List<Cell> cells) {
-        for (Cell cell : cells) {
-            cell.setSpeedMultiplier(1.0);
+        cells.forEach(cell -> {
             cell.setSizeMultiplier(1.0);
-        }
+            cell.setSizeMultiplier(1.0);
+        });
     }
 
 
