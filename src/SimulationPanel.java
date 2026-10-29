@@ -9,6 +9,7 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -163,6 +164,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
             Settings.INFECTED_COUNT = 3;
             Settings.ANTIVIRUS_COUNT = 3;
         }
+
         for (int i = 0; i < cellCount; i++) {
             double randomX = offset + Math.random() * (simScreenX - 2 * offset - 20);
             double randomY = offset + Math.random() * (simScreenY - 2 * offset - 20);
@@ -192,8 +194,21 @@ public class SimulationPanel extends JPanel implements ActionListener {
     }
 
     public int[] countByType() {
-        int neutral = 0, infected = 0, antivirus = 0;
-        for (Cell c : cells) {
+        //int neutral = 0, infected = 0, antivirus = 0;
+
+        // Use parallel stream to count all states of cells and put into a int array
+        int[] listOfCounts = cells.parallelStream()
+            .collect(Collectors.groupingBy( // collect and group by cell state
+                cell -> cell.getState(), 
+                Collectors.counting())) // count number of cells with each state
+            .values() // get values in map
+            .stream() // convert collection to stream
+            .mapToInt(Long::intValue) // convert result values from long to int
+            .toArray();
+
+        return listOfCounts;
+
+        /* for (Cell c : cells) {
             if (c.getState() == NeutralState.INSTANCE)
                 neutral++;
             if (c.getState() == InfectedState.INSTANCE)
@@ -201,7 +216,8 @@ public class SimulationPanel extends JPanel implements ActionListener {
             if (c.getState() == AntivirusState.INSTANCE)
                 antivirus++;
         }
-        return new int[] { neutral, infected, antivirus };
+
+        return new int[] { neutral, infected, antivirus }; */
     }
 
     public void EnterBerserk() {
@@ -296,8 +312,17 @@ public class SimulationPanel extends JPanel implements ActionListener {
         // Update the season system.
         seasonManager.update(cells, deltaTime);
 
-        List<Cell> toRemove = new ArrayList<>();
-        List<Cell> toAdd = new ArrayList<>();
+        List<Cell> toRemove = cells.stream()
+        .filter(cell -> Math.random() < 0.0001)
+        .toList();
+
+        // Identify cells to add
+        List<Cell> toAdd = cells.stream()
+            .filter(c -> (c.getState() == InfectedState.INSTANCE || c.getState() == AntivirusState.INSTANCE) && Math.random() < 0.0002)
+            .map(c -> new Cell(c.getX(), c.getY(), cells.size(), c.getState(), Color.ORANGE, true))
+            .toList();
+        
+        /*
         for (Cell c : cells) {
             if (Math.random() < 0.0001) {
                 toRemove.add(c);
@@ -306,7 +331,7 @@ public class SimulationPanel extends JPanel implements ActionListener {
                     && Math.random() < 0.0002) {
                 toAdd.add(new Cell(c.getX(), c.getY(), cells.size(), c.getState(), Color.ORANGE, true));
             }
-        }
+        } */
 
         cells.removeAll(toRemove);
         deadCellCount += toRemove.size();

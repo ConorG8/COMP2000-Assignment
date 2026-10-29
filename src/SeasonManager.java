@@ -183,8 +183,6 @@ public class SeasonManager {
 
 
     private void updateCellModifiers(List<Cell> cells) {
-
-
         
 
         for (Cell cell : cells) {
