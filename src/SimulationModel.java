@@ -181,7 +181,6 @@ public class SimulationModel {
         return population.stream().anyMatch(c -> c.getState() == InfectedState.INSTANCE);
     }
 
-    /** Read-only view for the renderer. Replaced by an Iterator in step 2. */
     public Iterable<Cell> getCells() {
         return population;
     }
@@ -202,8 +201,6 @@ public class SimulationModel {
     public String getCurrentSeason() { return seasonManager.getCurrentSeason().getName(); }
     public int getSecondsRemaining() { return seasonManager.getSecondsRemaining(); }
 
-    // Commands used by SeasonManager
-
     public void setSeasonsEnabled(boolean enabled) {
         seasonManager.setEnabled(enabled);
     }
@@ -223,8 +220,6 @@ public class SimulationModel {
     public void incrementDuplicateCellCount() {
         duplicateCellCount++;
     }
-
-    // validation
 
     public void validateSettings() {
         if (Settings.INFECTED_COUNT + Settings.ANTIVIRUS_COUNT > Settings.CELL_COUNT) {

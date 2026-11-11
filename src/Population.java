@@ -43,7 +43,7 @@ public class Population implements Iterable<Cell> {
     }
 
     /** Above this many cells a parallel stream is faster (measured with ParallelBenchmark). */
-    private static final int PARALLEL_THRESHOLD = 50_000; // <- replace with your measured value
+    private static final int PARALLEL_THRESHOLD = 50_000; 
 
     /**
      * A stream over the cells. Small populations use a sequential stream, large ones a

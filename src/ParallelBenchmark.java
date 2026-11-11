@@ -8,13 +8,12 @@ public class ParallelBenchmark {
 
     public static void main(String[] args) {
         int[] sizes = { 200, 2_000, 20_000, 200_000 };
-        long sink = 0; // using the results stops the JIT from optimising the work away
+        long sink = 0; 
 
         System.out.println("cells      sequential (us)   parallel (us)");
         for (int n : sizes) {
             List<Cell> cells = makeCells(n);
 
-            // Warm-up: let the JIT compile the code before we time it.
             for (int i = 0; i < 30; i++) {
                 sink += run(cells, false);
                 sink += run(cells, true);
